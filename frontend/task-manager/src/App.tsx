@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import Login from "./pages/Auth/Login";
+import SignUp from "./pages/Auth/SignUp";
+import PrivateRoute from "./routes/PrivateRoute";
+import Dashboard from "./pages/Admin/Dashboard";
+import UserDashBoard from "./pages/User/Dashboard";
+import CreateTask from "./pages/Admin/CreateTask";
+import ManageTasks from "./pages/Admin/ManageTasks";
+import ManageUsers from "./pages/Admin/ManageUsers";
+import Mytasks from "./pages/User/Mytasks";
+import ViewTaskDetails from "./pages/User/ViewTaskDetails";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="">
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
 
-export default App
+        <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin/*" element={<Dashboard />} />
+          <Route path="/admin/create-tasks" element={<CreateTask />} />
+          <Route path="/admin/tasks" element={<ManageTasks />} />
+          <Route path="/admin/users" element={<ManageUsers />} />
+        </Route>
+        <Route element={<PrivateRoute allowedRoles={["user"]} />}>
+          <Route path="/user/*" element={<UserDashBoard />} />
+          <Route path="/user/tasks" element={<Mytasks />} />
+          <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
+        </Route>
+      </Routes>
+    </div>
+  );
+};
+
+export default App;

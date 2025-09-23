@@ -1,0 +1,256 @@
+import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import { tokenPayload } from "../types/index.ts";
+import userModel from "../models/User.ts";
+import taskModel, { isTodo, TodoType } from "../models/Task.ts";
+import { json } from "stream/consumers";
+
+export const getDashboardData = async (req: Request, res: Response) => {
+  try {
+  } catch (error) {
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+export const getUserDashboardData = async (req: Request, res: Response) => {
+  try {
+  } catch (error) {
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+
+export const getAllTasks = async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json({ message: "not authorized" });
+    const { role, userId } = jwt.decode(token) as tokenPayload;
+    if (!role) return res.status(409).json({ message: "not authorized" });
+    if (role === "admin") {
+      const tasks = await taskModel
+        .find()
+        .populate("assignedTo", "name email profileImageUrl");
+      // .lean()
+      // .exec();
+      return res.json(tasks);
+    }
+    const tasks = await taskModel
+      .find({ assignedTo: userId })
+      .populate("assignedTo", "name email profileImageUrl");
+    //   .lean()
+    //   .exec();
+    return res.json(tasks);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+
+export const getTaskById = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(400).json({ message: "id is required!" });
+    }
+    const task = await taskModel
+      .findById(id)
+      .populate("assignedTo", "name email profileImageUrl")
+      .lean()
+      .exec();
+    if (!task) return res.status(404).json({ message: "task not found!!!" });
+
+    return res.status(200).json(task);
+  } catch (error) {
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+
+export const createTask = async (req: Request, res: Response) => {
+  try {
+    const {
+      title,
+      description,
+      priority,
+      status,
+      dueDate,
+      assignedTo,
+      todoChecklist,
+      progress,
+      attachments,
+    } = req.body;
+    if (!title || !todoChecklist || !todoChecklist.length) {
+      return res.status(409).json({ message: "feilds is required!!!" });
+    }
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json({ message: "not authorized" });
+    const { userId } = (await jwt.decode(token)) as tokenPayload;
+    const task = await taskModel.create({
+      title,
+      description,
+      priority,
+      status,
+      dueDate,
+      assignedTo,
+      todoChecklist,
+      progress,
+      attachments,
+      createdBy: userId,
+    });
+    if (!task) return res.status(500).json({ message: "server error, " });
+    return res.json(task);
+  } catch (error) {
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+
+export const updateTask = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    if (!id) return res.status(404).json({ message: "task id is required!" });
+    const task = await taskModel.findById(id);
+    if (!task) return res.status(404).json({ message: "task not found" });
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json({ message: "not athorized!!" });
+
+    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+
+    if (!userId) return res.status(409).json({ message: "not athorized!!" });
+    if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin") {
+      return res.status(409).json({
+        message: "not athorized!!",
+        // role,
+        // userId,
+        // assignedTo: task?.assignedTo,
+      });
+    }
+
+    const title = req.body?.title || task.title;
+    const description = req.body?.description || task.description;
+    const status = req.body?.status || task.status;
+    const todoChecklist = req.body?.todoChecklist || task.todoChecklist;
+    // const progress = req.body?.todoChecklist
+    //   ? req.body?.todoChecklist.reduce(
+    //       (prev: number, current: { text: string; completed: boolean }) => {
+    //         if (current.completed) {
+    //           prev += 100 / req.body?.todoChecklist.length;
+    //         }
+    //         return prev;
+    //       },
+    //       0
+    //     )
+    //   : task.todoChecklist;
+    const attachments = req.body?.attachments || task.attachments;
+    const updatedTask = await task.updateOne({
+      title,
+      description,
+      status,
+      todoChecklist,
+      attachments,
+    });
+    return res.json({
+      ...task.toObject(),
+      title,
+      description,
+      status,
+      todoChecklist,
+      attachments,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+export const deleteTask = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    if (!id) return res.status(404).json({ message: "task id is required!" });
+    const task = await taskModel.findById(id);
+    if (!task) return res.status(404).json({ message: "task not found" });
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json({ message: "not athorized!!" });
+
+    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+
+    if (!userId) return res.status(409).json({ message: "not athorized!!" });
+    if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin")
+      return res.status(409).json({ message: "not athorized!!" });
+
+    const infpo = await task.deleteOne();
+    return res.json(infpo);
+  } catch (error) {
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+export const updateTaskStatus = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    if (!id) return res.status(404).json({ message: "task id is required!" });
+
+    const task = await taskModel.findById(id);
+    if (!task) return res.status(404).json({ message: "task not found" });
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json({ message: "not athorized!!" });
+
+    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+
+    if (!userId) return res.status(409).json({ message: "not athorized!!" });
+    if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin")
+      return res.status(409).json({ message: "not athorized!!" });
+    const status = req.body?.status;
+    if (!status) return res.status(400).json("feild are required");
+    if (status === "Completed") {
+      task.todoChecklist.forEach((todo) => (todo.completed = true));
+    }
+    task.status = status;
+    task.save();
+
+    return res.status(200).json(task);
+  } catch (error) {
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
+export const updateTaskChecklist = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    if (!id) return res.status(404).json({ message: "task id is required!" });
+
+    const task = await taskModel.findById(id);
+    if (!task) return res.status(404).json({ message: "task not found" });
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json({ message: "not athorized!!" });
+
+    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+
+    if (!userId) return res.status(409).json({ message: "not athorized!!" });
+    if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin")
+      return res.status(409).json({ message: "not athorized!!" });
+    const todos = req.body?.todos;
+
+    if (!todos) {
+      return res.status(400).json({ message: "feild are required" });
+    }
+    let checkConfirmity = Array.isArray(todos) && todos.length;
+    todos.forEach((todo: TodoType) => {
+      if (!isTodo(todo)) {
+        checkConfirmity = false;
+        return;
+      }
+    });
+    if (!checkConfirmity) {
+      return res
+        .status(400)
+        .json({ message: "please provide a correct data!!" });
+    }
+
+    task.todoChecklist = todos;
+    task.progress = todos.reduce((acc: number, cur: TodoType) => {
+      if (cur.completed) acc += 100 / todos.length;
+      return acc;
+    }, 0);
+    if (task.progress === 100) task.status = "Completed";
+    await task.save();
+
+    return res.status(200).json(task);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "server error, ", error });
+  }
+};
