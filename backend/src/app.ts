@@ -7,6 +7,7 @@ import connectToDB from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.ts";
 import taskRouter from "./routes/taskRoutes.ts";
+import reportRouter from "./routes/reportRoutes.ts";
 
 const app = express();
 config();
@@ -33,7 +34,7 @@ connectToDB();
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/task", taskRouter);
-// app.use("/api/report", reportRoutes);
+app.use("/api/reports", reportRouter);
 
 // Sanitize PORT: remove any non-digit characters and parse to integer
 const rawPort = String(process.env.PORT ?? "").trim();

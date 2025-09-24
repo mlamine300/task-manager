@@ -7,13 +7,151 @@ import { json } from "stream/consumers";
 
 export const getDashboardData = async (req: Request, res: Response) => {
   try {
+    const totalTasks = await taskModel.countDocuments();
+    const pendingTasks = await taskModel.countDocuments({ status: "Pending" });
+    const completedTasks = await taskModel.countDocuments({
+      status: "Completed",
+    });
+    const overdueTasks = await taskModel.countDocuments({
+      status: { $ne: "Completed" },
+      dueDate: { $lt: new Date() },
+    });
+    const taskStatues = ["Pending", "In Progress", "Completed"];
+    const taskDistributionRaw = await taskModel.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const taskDistribution = taskStatues.reduce((acc: any, curr: string) => {
+      const key = curr.replace(/\s+/g, "");
+      const founItem = taskDistributionRaw.find((item) => item._id === curr);
+      console.log(founItem + " - " + founItem?.count);
+      acc[key] = founItem?.count ?? 0;
+      return acc;
+    }, {});
+    taskDistribution["all"] = totalTasks;
+
+    const taskPriority = ["Low", "Medium", "High"];
+    const taskPriorityLevelRaw = await taskModel.aggregate([
+      {
+        $group: {
+          _id: "$priority",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const taskPriorityLevel = taskPriority.reduce((acc: any, curr: string) => {
+      const key = curr.replace(/\s+/g, "");
+      const findItem = taskPriorityLevelRaw.find((item) => item._id === curr);
+      acc[key] = findItem?.count ?? 0;
+      return acc;
+    }, {});
+    taskPriorityLevel["all"] = totalTasks;
+    const recentTasks = await taskModel
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select("title status priority dueDate createdAt");
+    res.status(200).json({
+      statistics: {
+        totalTasks,
+        pendingTasks,
+        completedTasks,
+        overdueTasks,
+      },
+      charts: {
+        taskDistribution,
+        taskPriorityLevel,
+      },
+      recentTasks,
+    });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "server error, ", error });
   }
 };
 export const getUserDashboardData = async (req: Request, res: Response) => {
   try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json({ message: "not autorized" });
+    const { userId } = (await jwt.decode(token)) as tokenPayload;
+    if (!userId) return res.status(409).json({ message: "not autorized" });
+
+    console.log(userId);
+    const totalTasks = await taskModel.countDocuments({ assignedTo: userId });
+    const pendingTasks = await taskModel.countDocuments({
+      status: "Pending",
+      assignedTo: userId,
+    });
+    const completedTasks = await taskModel.countDocuments({
+      status: "Completed",
+      assignedTo: userId,
+    });
+    const overdueTasks = await taskModel.countDocuments({
+      assignedTo: userId,
+      status: { $ne: "Completed" },
+      dueDate: { $lt: new Date() },
+    });
+
+    const taskStatues = ["Pending", "In Progress", "Completed"];
+    const taskDistributionRaw = await taskModel.aggregate([
+      { $match: { assignedTo: userId } },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const taskDistribution = taskStatues.reduce((acc: any, curr: string) => {
+      const key = curr.replace(/\s+/g, "");
+      const founItem = taskDistributionRaw.find((item) => item._id === curr);
+
+      acc[key] = founItem?.count ?? 0;
+      return acc;
+    }, {});
+    taskDistribution["all"] = totalTasks;
+
+    const taskPriority = ["Low", "Medium", "High"];
+    const taskPriorityLevelRaw = await taskModel.aggregate([
+      { $match: { assignedTo: userId } },
+      {
+        $group: {
+          _id: "$priority",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const taskPriorityLevel = taskPriority.reduce((acc: any, curr: string) => {
+      const key = curr.replace(/\s+/g, "");
+      const findItem = taskPriorityLevelRaw.find((item) => item._id === curr);
+      acc[key] = findItem?.count ?? 0;
+      return acc;
+    }, {});
+    taskPriorityLevel["all"] = totalTasks;
+    const recentTasks = await taskModel
+      .find({ assignedTo: userId })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select("title status priority dueDate createdAt");
+    res.status(200).json({
+      statistics: {
+        totalTasks,
+        pendingTasks,
+        completedTasks,
+        overdueTasks,
+      },
+      charts: {
+        taskDistribution,
+        taskPriorityLevel,
+      },
+      recentTasks,
+    });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "server error, ", error });
   }
 };
