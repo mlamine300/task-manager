@@ -13,7 +13,7 @@ import ViewTaskDetails from "./pages/User/ViewTaskDetails";
 
 const App = () => {
   return (
-    <div className="">
+    <div className="layout bg-background">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />

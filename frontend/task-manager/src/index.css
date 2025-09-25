@@ -1,17 +1,94 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
-@theme {
-  --font-display: "Roboto", "sans-serif";
+@theme inline {
   --breakpoint-3xl: 1920px;
-  --color-primary: #1368ec;
+
+  --font-display: "Poppins", sans-serif;
+
+  /* Light theme */
+  --color-background-screen: var(--background-screen);
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  --color-text-primary: var(--text-primary);
+  --color-text-accent: var(--text-accent);
+  --color-cold: var(--cold);
+  --color-hot: var(--hot);
+
+  /* Neutrals */
+  --color-gray-cold: #6b7a8f;
+  --color-gray-hot: #dce3eb;
+
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
 }
+
+:root {
+  /* Light theme */
+  --background-screen: #d9dadf;
+  --background: #f0faff;
+  --primary: #64b5f6;
+  --text-primary: #12161d;
+  --text-accent: #f0fbff;
+  --cold: #346ca8;
+  --hot: #bae5ff;
+
+  /* Neutrals */
+  --gray-cold: #6b7a8f;
+  --gray-hot: #dce3eb;
+
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+}
+
+[data-theme="dark"] {
+  --background-screen: #12151a;
+  --background: #19212a;
+  --primary: #487da7;
+  --text-primary: #ecf5fa;
+  --text-accent: #223343;
+  --cold: #385c7a;
+  --hot: #85bee8;
+}
+
 @layer base {
   html {
     font-family: var(--font-display);
   }
+
   body {
-    background-color: #fcfcfc;
+    background-color: var(--color-background-screen);
     overflow-x: hidden;
+    color: var(--color-text-primary);
+  }
+
+  .layout {
+    @apply max-w-[1440px]  h-svh max-h-[1080px] flex justify-center items-center m-auto;
+  }
+
+  h3 {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700; /* font-bold */
+    color: var(--color-text-primary);
+  }
+
+  p {
+    @apply text-lg text-text-primary;
+  }
+
+  h4 {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 600; /* font-semibold */
+    color: var(--color-text-primary);
+  }
+
+  .text-secondary {
+    font-size: 1.125rem;
+    color: color-mix(in srgb, var(--color-text-primary) 70%, transparent);
+  }
+
+  .primary-button {
+    @apply px-4 py-2 rounded-xl font-semibold;
+    background-color: var(--color-primary);
+    color: var(--color-text-accent);
+    transition: background-color 0.3s var(--ease-fluid);
   }
 }
