@@ -17,12 +17,14 @@ authRouter.get("/profile", protect, getUserProfile);
 authRouter.put("/profile", protect, updateUserProfile);
 authRouter.post(
   "/upload-image",
-  protect,
+
   multer.single("profile_image"),
   (req: Request, res: Response) => {
+    console.log("-----------------------------");
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
+    console.log(req.file);
     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
       req.file.filename
     }`;

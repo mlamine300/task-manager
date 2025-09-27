@@ -1,30 +1,74 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import Input from "../../components/ui/Input";
 import AuthLayout from "../../layouts/AuthLayout";
 import Button from "../../components/ui/Button";
 
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { validateEmail, validatePassword } from "../../utils/helper";
+import axiosInstance from "../../utils/axiosInstance";
+import { API_PATH } from "../../utils/apiPaths";
+import { useUserContext } from "../../context/user/userContext";
+import { AxiosError } from "axios";
 
 const Login = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [error, setError] = useState({});
-
-  const handleLogin = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const [email, setEmail] = useState<string>("lmoh@gmail.com");
+  const [password, setPassword] = useState<string>("Mohamed16.50");
+  const [error, setError] = useState<any>({});
+  const [pending, setpending] = useState(false);
+  const { updateUser, user } = useUserContext();
+  console.log(user);
+  const navigate = useNavigate();
+  const handleLogin = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     if (!validateEmail(email)) {
-      setError((err) => {
+      setError((err: any) => {
         return { ...err, email: "Please enter a valid email address." };
       });
       return;
     }
     if (!validatePassword(password)) {
-      setError((err) => {
+      setError((err: any) => {
         return { ...err, password: "Please enter a valid password." };
       });
       return;
     }
+
+    setpending(true);
+    try {
+      const response = await axiosInstance.post(API_PATH.AUTH.LOGIN, {
+        email,
+        password,
+      });
+      if (response.status === 200) {
+        console.log(response.data);
+        const token = response.data;
+        localStorage.setItem("token", token);
+        console.log(user);
+        updateUser(response.data);
+        console.log(user);
+        if (user?.role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
+      }
+    } catch (error: any) {
+      let errResponse = "error on the server";
+      if (error instanceof AxiosError) {
+        if (error.response?.data?.message)
+          errResponse = error.response?.data.message;
+      }
+      setError((err: any) => {
+        return { ...err, login: errResponse };
+      });
+
+      console.error(error);
+    }
+    setpending(false);
+    // setError({});
   };
 
   return (
@@ -41,7 +85,7 @@ const Login = () => {
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setError((err) => {
+              setError((err: any) => {
                 return { ...err, email: "" };
               });
             }}
@@ -55,13 +99,22 @@ const Login = () => {
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              setError((err) => {
+              setError((err: any) => {
                 return { ...err, password: "" };
               });
             }}
             error={error?.password || ""}
           />
-          <Button text={"LOGIN"} variant="primary" onClick={handleLogin} />
+
+          <Button
+            disabled={pending}
+            text={"LOGIN"}
+            variant="primary"
+            onClick={handleLogin}
+          />
+          {error?.login && (
+            <p className="text-sm text-red-500">{error.login}</p>
+          )}
         </form>
         <p className="mt-4">
           Don't have an account?{" "}

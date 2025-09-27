@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useRef, useState, type ReactElement } from "react";
+import React, { useRef, useState } from "react";
 import { LuTrash, LuUpload, LuUser } from "react-icons/lu";
 
 const ProfilePhotoSelector = ({

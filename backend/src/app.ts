@@ -8,6 +8,10 @@ import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.ts";
 import taskRouter from "./routes/taskRoutes.ts";
 import reportRouter from "./routes/reportRoutes.ts";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 config();
@@ -33,8 +37,13 @@ connectToDB();
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
-app.use("/api/task", taskRouter);
+app.use("/api/tasks", taskRouter);
 app.use("/api/reports", reportRouter);
+
+app.use(
+  "/uploads",
+  express.static(path.join(path.dirname(__dirname), "uploads"))
+);
 
 // Sanitize PORT: remove any non-digit characters and parse to integer
 const rawPort = String(process.env.PORT ?? "").trim();

@@ -61,7 +61,7 @@
   }
 
   .layout {
-    @apply max-w-[1440px]  h-svh max-h-[1080px] flex justify-center items-center m-auto;
+    @apply max-w-[1440px]  h-svh  flex justify-center items-center m-auto;
   }
 
   h3 {
@@ -71,7 +71,7 @@
   }
 
   p {
-    @apply text-lg text-text-primary;
+    @apply text-lg;
   }
 
   h4 {

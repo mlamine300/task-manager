@@ -3,6 +3,7 @@ import type { NextFunction, Response, Request } from "express";
 import userModel from "../models/User.ts";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { tokenPayload } from "../types/index.ts";
 export const registerUser = async (
   req: Request,
   res: Response,
@@ -52,20 +53,26 @@ export const loginUser = async (req: Request, res: Response) => {
 
   if (!email || !password)
     return res.status(404).json({ message: "email and password are required" });
-  const user = await userModel.findOne({ email }).lean().exec();
+  const foundUser = await userModel.findOne({ email }).select("").lean().exec();
 
-  if (!user || !user.password)
+  if (!foundUser || !foundUser.password)
     return res.status(409).json({ message: "incorrect email or password" });
-  const compare = await bcrypt.compare(password, user.password);
+  const compare = await bcrypt.compare(password, foundUser.password);
   if (!compare)
     return res.status(409).json({ message: "incorrect email or password" });
   const token = jwt.sign(
-    { userId: user._id, role: user.role },
+    { userId: foundUser._id, role: foundUser.role },
     process.env.TOKEN_SECRET || "",
     { expiresIn: "7d" }
   );
-  res.status(200).json(token);
-  return token;
+  const user = {
+    token,
+    profileImageUrl: foundUser.profileImageUrl,
+    email: foundUser.email,
+    name: foundUser.name,
+    role: foundUser.role,
+  };
+  return res.status(200).json(user);
 };
 
 export const getUserProfile = async (
@@ -74,7 +81,9 @@ export const getUserProfile = async (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(409).json("un authorized");
+    const { userId } = (await jwt.decode(token)) as tokenPayload;
     if (!userId) {
       return res.status(409).json({ message: "user id is required!!" });
     }
@@ -88,6 +97,7 @@ export const getUserProfile = async (
 
     return res.status(200).json(user);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "server error, ", error });
   }
 };

@@ -10,8 +10,11 @@ import ManageTasks from "./pages/Admin/ManageTasks";
 import ManageUsers from "./pages/Admin/ManageUsers";
 import Mytasks from "./pages/User/Mytasks";
 import ViewTaskDetails from "./pages/User/ViewTaskDetails";
+import { useTheme } from "next-themes";
 
 const App = () => {
+  const { setTheme } = useTheme();
+  setTheme("light");
   return (
     <div className="layout bg-background">
       <Routes>

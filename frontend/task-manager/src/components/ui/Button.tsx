@@ -8,11 +8,9 @@ const Button = ({
   variant,
   className,
   ...props
-}: {
+}: React.ComponentProps<"button"> & {
   text: string;
-  onClick: any;
   variant: "primary" | "outline";
-  className?: string;
 }) => {
   const primary =
     "bg-primary p-1 hover:bg-primary/50 disabled:bg-gray-cold/70 rounded text-lg text-text-accent cursor-pointer";

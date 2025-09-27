@@ -19,7 +19,7 @@ const Input = ({
   key,
   error,
 }: inputProps) => {
-  const [showPassword, setShowPassword] = useState<boolean>(true);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   return (
     <div className="flex flex-col gap-4">
       <label htmlFor={key}>{label} </label>
@@ -52,6 +52,7 @@ const Input = ({
             />
           ))}
       </div>
+
       {error && <p className="text-red-600 text-sm ">{error}</p>}
     </div>
   );
