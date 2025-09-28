@@ -7,3 +7,10 @@ export interface User {
   token?: string;
   createdAt?: Date;
 }
+export interface TaskLine {
+  _id: string;
+  status: "Pending" | "Completed" | "In Progress";
+  title: string;
+  priority: "Low" | "Medium" | "High";
+  createdAt: Date;
+}

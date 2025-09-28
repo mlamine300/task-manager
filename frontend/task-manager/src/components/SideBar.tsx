@@ -14,8 +14,8 @@ const SideBar = ({ type }: SideBarProps) => {
   const { user } = useUserContext();
 
   return (
-    <nav className="flex flex-col w-64 border-r-[1px] gap-10 border-gray-200 h-full min-h-svh">
-      <div className="flex flex-col items-center gap-1 mt-8">
+    <nav className="flex flex-col w-64 border-r-[1px] gap-10 border-gray-200 h-min-lvh bg-white ">
+      <div className="flex  flex-col items-center gap-1 mt-8">
         {user?.profileImageUrl ? (
           <img src={user?.profileImageUrl} className="rounded-full w-20 h-20" />
         ) : (

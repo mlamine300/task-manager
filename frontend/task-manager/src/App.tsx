@@ -16,7 +16,7 @@ const App = () => {
   const { setTheme } = useTheme();
   setTheme("light");
   return (
-    <div className="layout bg-background">
+    <div className="layout bg-background-screen">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />

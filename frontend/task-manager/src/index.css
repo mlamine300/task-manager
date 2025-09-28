@@ -24,7 +24,7 @@
 
 :root {
   /* Light theme */
-  --background-screen: #d9dadf;
+  --background-screen: #f8f8fa;
   --background: #f0faff;
   --primary: #64b5f6;
   --text-primary: #12161d;
@@ -61,7 +61,7 @@
   }
 
   .layout {
-    @apply max-w-[1440px]  h-svh  flex justify-center items-center m-auto;
+    @apply max-w-[1440px] h-full  min-h-lvh  flex justify-center items-center m-auto;
   }
 
   h3 {
