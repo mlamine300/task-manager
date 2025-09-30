@@ -3,7 +3,6 @@ import {
   BarChart,
   CartesianGrid,
   Legend,
-  Rectangle,
   Tooltip,
   XAxis,
   YAxis,
@@ -23,7 +22,7 @@ const TaskBarChart = ({ data }: { data: any }) => {
         data={data}
         height={350}
         syncMethod="index"
-        width={400}
+        width={360}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />

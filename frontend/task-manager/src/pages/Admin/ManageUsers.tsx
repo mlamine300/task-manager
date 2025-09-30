@@ -1,5 +1,7 @@
+import DashboardLayout from "../../layouts/DashboardLayout";
+
 const ManageUsers = () => {
-  return <div>ManageUsers</div>;
+  return <DashboardLayout>ManageUsers</DashboardLayout>;
 };
 
 export default ManageUsers;

@@ -41,9 +41,9 @@ const Dashboard = () => {
       : [];
 
   return (
-    <DashboardLayout activeMenu="">
-      <div className="flex flex-col gap-8 w-full h-full bg-background/50 p-4">
-        <Card className=" flex flex-col">
+    <DashboardLayout>
+      <div className="flex max-md:items-center bg-background/50 flex-col gap-8 w-svw h-full  p-4">
+        <Card className=" flex flex-col  max-md:w-svw">
           <p className="text-lg font-semibold">
             {`Good Morning! `}
             <span className="italic font-bold capitalize text-cold">
@@ -77,15 +77,15 @@ const Dashboard = () => {
           </div>
         </Card>
 
-        <div className=" gap-5 grid md:grid-cols-2 justify-around">
-          <Card>
+        <div className=" gap-5 grid md:grid-cols-2 justify-around max-md:w-svw">
+          <Card className=" max-md:w-svw">
             <TaskPieChart data={pieChartData} />
           </Card>
-          <Card>
+          <Card className=" max-md:w-svw">
             <TaskBarChart data={barChartData} />
           </Card>
         </div>
-        <Card className="flex flex-col p-4">
+        <Card className="flex flex-col p-4 max-md:w-svw">
           <div className="flex justify-between">
             <p className="font-semibold text-lg">Recent Tasks</p>
             <Link

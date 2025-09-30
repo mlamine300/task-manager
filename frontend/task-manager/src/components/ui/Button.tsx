@@ -10,17 +10,25 @@ const Button = ({
   ...props
 }: React.ComponentProps<"button"> & {
   text: string;
-  variant: "primary" | "outline";
+  variant: "primary" | "outline" | "shadow";
 }) => {
   const primary =
-    "bg-primary p-1 hover:bg-primary/50 disabled:bg-gray-cold/70 rounded text-lg text-text-accent cursor-pointer";
+    "bg-primary hover:bg-primary/50 disabled:bg-gray-cold/70 text-text-accent";
+
   const outline =
-    " border-primary text-primary rounded font-sembold border-2 text-lg p-1 hover:text-primary/50 hover:border-primary/50 disabled:border-gray-cold/70 disabled:text-gray-cold/70 cursor-pointer";
-  const variantObject = { primary, outline };
+    "border-primary text-primary font-semibold border-2 hover:text-primary/50 hover:border-primary/50 disabled:border-gray-cold/70 disabled:text-gray-cold/70";
+
+  const shadow =
+    "bg-gray-200/50 border border-gray-400/20 text-gray-700 font-semibold hover:bg-gray-200/30 disabled:text-gray-cold/70";
+  const variantObject = { primary, outline, shadow };
   return (
     <button
       {...props}
-      className={twMerge(variantObject[variant] || primary, className)}
+      className={twMerge(
+        "rounded text-lg p-1 cursor-pointer disabled:cursor-not-allowed ",
+        variantObject[variant] || primary,
+        className
+      )}
       onClick={onClick}
     >
       {text}

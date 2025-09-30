@@ -233,7 +233,7 @@ export const createTask = async (req: Request, res: Response) => {
       createdBy: userId,
     });
     if (!task) return res.status(500).json({ message: "server error, " });
-    return res.json(task);
+    return res.status(201).json(task);
   } catch (error) {
     return res.status(500).json({ message: "server error, ", error });
   }

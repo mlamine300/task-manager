@@ -16,7 +16,7 @@ export const API_PATH = {
     GET_DASHBOARD_DATA: "/api/tasks/dashboard-data",
     GET_USER_DASHBOARD_DATA: "/api/tasks/user-dashboard-data",
     GET_ALL_TASKS: "/api/tasks",
-    CREATE_TASK: "/api/taks",
+    CREATE_TASK: "/api/tasks",
     GET_TASK_BY_ID: (taskId: string) => `/api/tasks/${taskId}`,
     UPDATE_TASK: (taskId: string) => `/api/tasks/${taskId}`,
     DELETE_TASK: (taskId: string) => `/api/tasks/${taskId}`,

@@ -12,6 +12,7 @@ const MenuItem = ({
     icon: any;
     path: string;
   };
+
   choosed: boolean;
 }) => {
   const Icon = item.icon;

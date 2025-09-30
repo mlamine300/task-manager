@@ -1,4 +1,8 @@
 export interface User {
+  _id?: string;
+  completedTask?: number;
+  pendingTask?: number;
+  inProgressTask?: number;
   name: string;
   email: string;
   profileImageUrl?: string;
@@ -7,10 +11,31 @@ export interface User {
   token?: string;
   createdAt?: Date;
 }
+
+export type priorityLevel = "Low" | "Medium" | "High";
+export type statusType = "Pending" | "In Progress" | "Completed";
+
 export interface TaskLine {
   _id: string;
-  status: "Pending" | "Completed" | "In Progress";
+  status: statusType;
   title: string;
-  priority: "Low" | "Medium" | "High";
+  priority: priorityLevel;
   createdAt: Date;
+}
+export interface TodoType {
+  text: string;
+  completed?: boolean | true;
+}
+export interface Task {
+  _id?: string;
+  title: string;
+  description: string;
+  priority?: "Low" | "Medium" | "High";
+  status?: "Pending" | "In Progress" | "Completed";
+  dueDate: Date;
+  assignedTo: User[];
+  createdBy?: string;
+  attachments?: string[];
+  todoChecklist: TodoType[];
+  progress?: number;
 }

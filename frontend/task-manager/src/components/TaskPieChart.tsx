@@ -8,8 +8,10 @@ const TaskPieChart = ({ data }: { data: any }) => {
     "In Progress": "#FFBB28",
     Completed: "#00C49F",
   };
+  const isItPhone = window.innerWidth < 500;
+
   return (
-    <div className="flex flex-col  ">
+    <div className="flex flex-col">
       <p className="font-semibold text-sm">Task Distribution</p>
       <PieChart
         width={400}
@@ -20,9 +22,9 @@ const TaskPieChart = ({ data }: { data: any }) => {
           cx="50%"
           cy="50%"
           data={data}
-          innerRadius={70}
+          innerRadius={120}
           dataKey="count"
-          outerRadius={85}
+          outerRadius={150}
           fill="green"
           style={{ cursor: "pointer", outline: "none" }}
         >
@@ -38,9 +40,9 @@ const TaskPieChart = ({ data }: { data: any }) => {
           ))}
         </Pie>
         <Legend
-          layout="horizontal"
+          layout={isItPhone ? "vertical" : "horizontal"}
           verticalAlign="bottom"
-          align="right"
+          align={isItPhone ? "center" : "right"}
           iconType="line"
           fontSizeAdjust={0.5}
           iconSize={8}
