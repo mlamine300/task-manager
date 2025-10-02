@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import Progress from "./Progress";
 import moment from "moment";
 import UsersAssignedTo from "./UsersAssignedTo";
+import { Link } from "react-router";
 
 const TaskCard = ({ className, task }: { className?: string; task: Task }) => {
   const statusStyle = {
@@ -40,7 +41,12 @@ const TaskCard = ({ className, task }: { className?: string; task: Task }) => {
         </p>
       </div>
       <div className="px-4  mt-2   border-l-2 border-primary">
-        <p className="text-sm font-semibold">{task.title} </p>
+        <Link
+          to={`/admin/create-task/${task._id}`}
+          className="text-sm font-semibold"
+        >
+          {task.title}{" "}
+        </Link>
         <p className="text-xs text-gray-400">
           {task.description.length > 100
             ? task.description.slice(0, 100) + "..."

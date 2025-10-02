@@ -6,6 +6,8 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATH } from "../../utils/apiPaths";
 
 import TaskCard from "../../components/TaskCard";
+import { HiDocumentReport } from "react-icons/hi";
+import toast from "react-hot-toast";
 
 const ManageTasks = () => {
   const status = ["All", "Pending", "In Progress", "Completed"];
@@ -24,7 +26,30 @@ const ManageTasks = () => {
         s === "All" ? tasks.length : tasks.filter((t) => t.status === s).length,
     };
   }, {} as Record<string, number>);
-  console.log(tasksCount);
+  const downloadReport = async () => {
+    try {
+      const { data } = await axiosInstance.get(API_PATH.REPORTS.EXPORT_TASKS, {
+        responseType: "blob",
+      });
+      if (!data) {
+        toast.error("error downloading report");
+        return;
+      }
+      const url = window.URL.createObjectURL(new Blob([data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "task_details.xlsx");
+      document.body.append(link);
+      link.click();
+      link.parentElement?.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      toast.error("error downloading report");
+    }
+  };
+
   useEffect(() => {
     const fetchTasks = async () => {
       const response = await axiosInstance.get(API_PATH.TASK.GET_ALL_TASKS);
@@ -37,7 +62,7 @@ const ManageTasks = () => {
       <div className="flex flex-col p-8  w-full">
         <div className="flex items-center flex-col justify-center sm:flex-row">
           <p className="font-semibold text-xl sm:mr-auto">My Tasks</p>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
             {status.map((s: string) => {
               return (
                 <div
@@ -59,6 +84,13 @@ const ManageTasks = () => {
                 </div>
               );
             })}
+            <button
+              onClick={() => downloadReport()}
+              className="flex ml-4 gap-2 bg-lime-500/30 hover:bg-lime-500/50 items-center px-2 py-1 rounded"
+            >
+              <HiDocumentReport />
+              Download Report
+            </button>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-md:place-items-center ">

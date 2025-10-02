@@ -11,6 +11,7 @@ import ManageUsers from "./pages/Admin/ManageUsers";
 import Mytasks from "./pages/User/Mytasks";
 import ViewTaskDetails from "./pages/User/ViewTaskDetails";
 import { useTheme } from "next-themes";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const { setTheme } = useTheme();
@@ -24,6 +25,7 @@ const App = () => {
         <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
           <Route path="/admin/*" element={<Dashboard />} />
           <Route path="/admin/create-task" element={<CreateTask />} />
+          <Route path="/admin/create-task/:taskId" element={<CreateTask />} />
           <Route path="/admin/tasks" element={<ManageTasks />} />
           <Route path="/admin/users" element={<ManageUsers />} />
         </Route>
@@ -33,6 +35,7 @@ const App = () => {
           <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
         </Route>
       </Routes>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 };
