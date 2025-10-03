@@ -1,7 +1,7 @@
 import React from "react";
 import type { User } from "../types";
 import Card from "./Card";
-import { getRandomColor } from "../utils/helper";
+import { getColorFromName } from "../utils/helper";
 
 const UserCard = ({ user }: { user: User }) => {
   return (
@@ -15,7 +15,7 @@ const UserCard = ({ user }: { user: User }) => {
           />
         ) : (
           <p
-            style={{ backgroundColor: getRandomColor() }}
+            style={{ backgroundColor: getColorFromName(user.name) }}
             className="shrink-0 rounded-full w-12 h-12 flex items-center justify-center"
           >
             {" "}

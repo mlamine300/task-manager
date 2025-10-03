@@ -6,7 +6,7 @@ import { useState } from "react";
 import Modal from "./ui/Modal";
 import SelectUsers from "./SelectUsers";
 import type { User } from "../types";
-import { getRandomColor } from "../utils/helper";
+import { getColorFromName } from "../utils/helper";
 
 const AssignTo = ({
   selectedUsers,
@@ -42,7 +42,7 @@ const AssignTo = ({
                 ) : (
                   <div
                     className="w-10 h-10 text-3xl rounded-full flex items-center justify-center text-gray-600"
-                    style={{ backgroundColor: getRandomColor() }}
+                    style={{ backgroundColor: getColorFromName(user.name) }}
                   >
                     {user.name.charAt(0).toUpperCase()}
                   </div>

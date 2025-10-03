@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import type { Task } from "../../types";
-import axiosInstance from "../../utils/axiosInstance";
-import { API_PATH } from "../../utils/apiPaths";
+import DashboardLayout from "../layouts/DashboardLayout";
+import type { Task } from "../types";
+import axiosInstance from "../utils/axiosInstance";
+import { API_PATH } from "../utils/apiPaths";
 
-import TaskCard from "../../components/TaskCard";
+import TaskCard from "../components/TaskCard";
 import { HiDocumentReport } from "react-icons/hi";
 import toast from "react-hot-toast";
 
 const ManageTasks = () => {
+  const role = localStorage.getItem("role") || "member";
   const status = ["All", "Pending", "In Progress", "Completed"];
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -84,13 +85,15 @@ const ManageTasks = () => {
                 </div>
               );
             })}
-            <button
-              onClick={() => downloadReport()}
-              className="flex ml-4 gap-2 bg-lime-500/30 hover:bg-lime-500/50 items-center px-2 py-1 rounded"
-            >
-              <HiDocumentReport />
-              Download Report
-            </button>
+            {role === "admin" && (
+              <button
+                onClick={() => downloadReport()}
+                className="flex ml-4 gap-2 bg-lime-500/30 hover:bg-lime-500/50 items-center px-2 py-1 rounded"
+              >
+                <HiDocumentReport />
+                Download Report
+              </button>
+            )}
           </div>
         </div>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-md:place-items-center ">

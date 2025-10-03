@@ -13,7 +13,7 @@ import {
 } from "../controllers/taskController.ts";
 const taskRouter = express.Router();
 
-taskRouter.get("/dashboard-data", protect, getDashboardData);
+taskRouter.get("/dashboard-data", protect, checkAdmin, getDashboardData);
 taskRouter.get("/user-dashboard-data", protect, getUserDashboardData);
 taskRouter.get("/", protect, getAllTasks);
 taskRouter.get("/:id", protect, getTaskById);

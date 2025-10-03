@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { SIDE_MENU_ADMIN_DATA, SIDE_MENU_USER_DATA } from "../utils/data";
 import { useUserContext } from "../context/user/userContext";
 import MenuItem from "./MenuItem";
 import { useLocation } from "react-router";
 import { HiBars3 } from "react-icons/hi2";
-interface SideBarProps {
-  type: "admin" | "user";
-  activeMenu: string;
-}
-const SideBar = ({ type }: SideBarProps) => {
+import { getColorFromName } from "../utils/helper";
+
+const SideBar = () => {
   const { pathname } = useLocation();
+  const isShoosed = (link: string) => {
+    if (link === "/") return link === pathname;
+    return pathname.includes(link);
+  };
+  const type = localStorage.getItem("role");
+
   const menuItems =
     type === "admin" ? SIDE_MENU_ADMIN_DATA : SIDE_MENU_USER_DATA;
   const { user } = useUserContext();
@@ -37,7 +41,12 @@ const SideBar = ({ type }: SideBarProps) => {
               className="rounded-full w-20 h-20"
             />
           ) : (
-            <p className="rounded-full bg-teal-400 text-white w-20 h-20 items-center justify-center flex text-7xl">
+            <p
+              style={{
+                backgroundColor: getColorFromName(user?.name || "user"),
+              }}
+              className="rounded-full text-white w-20 h-20 items-center justify-center flex text-7xl"
+            >
               {user?.name.slice(0, 1).toUpperCase()}
             </p>
           )}
@@ -53,7 +62,7 @@ const SideBar = ({ type }: SideBarProps) => {
               <MenuItem
                 item={item}
                 key={index}
-                choosed={item.path == pathname}
+                choosed={isShoosed(item.path)}
               />
             );
           })}

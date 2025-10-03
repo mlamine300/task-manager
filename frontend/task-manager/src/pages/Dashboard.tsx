@@ -1,26 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import DashboardLayout from "../../layouts/DashboardLayout";
-import axiosInstance from "../../utils/axiosInstance";
-import { API_PATH } from "../../utils/apiPaths";
-import Card from "../../components/Card";
-import { useUserContext } from "../../context/user/userContext";
+import DashboardLayout from "../layouts/DashboardLayout";
+import axiosInstance from "../utils/axiosInstance";
+import { API_PATH } from "../utils/apiPaths";
+import Card from "../components/Card";
+import { useUserContext } from "../context/user/userContext";
 import moment from "moment";
-import ItemBadge from "../../components/ItemBadge";
+import ItemBadge from "../components/ItemBadge";
 import { Link } from "react-router";
 import { FaArrowRight } from "react-icons/fa6";
-import TaskTable from "../../components/TaskTable";
-import TaskPieChart from "../../components/TaskPieChart";
-import TaskBarChart from "../../components/TaskBarChart";
+import TaskTable from "../components/TaskTable";
+import TaskPieChart from "../components/TaskPieChart";
+import TaskBarChart from "../components/TaskBarChart";
 
 const Dashboard = () => {
+  const role = localStorage.getItem("role") || "member";
   const [dashboardData, setDashboardData] = useState<any>(null);
   const { user } = useUserContext();
   useEffect(() => {
     const fetchDashboardData = async () => {
-      const { data } = await axiosInstance.get(
-        API_PATH.TASK.GET_DASHBOARD_DATA
-      );
+      const link =
+        role === "admin"
+          ? API_PATH.TASK.GET_DASHBOARD_DATA
+          : API_PATH.TASK.GET_USER_DASHBOARD_DATA;
+      const { data } = await axiosInstance.get(link);
       console.log(data);
       if (data) setDashboardData(data);
     };

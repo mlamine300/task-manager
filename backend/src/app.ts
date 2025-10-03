@@ -9,6 +9,9 @@ import userRouter from "./routes/userRoutes.ts";
 import taskRouter from "./routes/taskRoutes.ts";
 import reportRouter from "./routes/reportRoutes.ts";
 import { fileURLToPath } from "url";
+import mongoose from "mongoose";
+import userModel from "./models/User.ts";
+import taskModel from "./models/Task.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

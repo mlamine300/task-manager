@@ -1,9 +1,17 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Fouter from "../components/Fouter";
 import Header from "../components/Header";
+import NotAuthorized from "../components/NotAuthorized";
 
 const PrivateRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
-  if (allowedRoles.includes("admin"))
+  const role = localStorage.getItem("role");
+
+  const navigate = useNavigate();
+
+  if (!role) {
+    navigate("/login");
+  }
+  if (role && allowedRoles.includes(role))
     return (
       <div className="w-full h-full">
         <Header />
@@ -12,7 +20,7 @@ const PrivateRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
       </div>
     );
 
-  return <div className="text-gray-600 text-7xl">404</div>;
+  return <NotAuthorized />;
 };
 
 export default PrivateRoute;

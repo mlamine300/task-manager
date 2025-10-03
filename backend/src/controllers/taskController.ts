@@ -4,6 +4,7 @@ import { tokenPayload } from "../types/index.ts";
 import userModel from "../models/User.ts";
 import taskModel, { isTodo, TodoType } from "../models/Task.ts";
 import { json } from "stream/consumers";
+import mongoose from "mongoose";
 
 export const getDashboardData = async (req: Request, res: Response) => {
   try {
@@ -80,25 +81,27 @@ export const getUserDashboardData = async (req: Request, res: Response) => {
     const { userId } = (await jwt.decode(token)) as tokenPayload;
     if (!userId) return res.status(409).json({ message: "not autorized" });
 
-    console.log(userId);
     const totalTasks = await taskModel.countDocuments({ assignedTo: userId });
+
     const pendingTasks = await taskModel.countDocuments({
       status: "Pending",
-      assignedTo: userId,
+      assignedTo: new mongoose.Types.ObjectId(userId),
     });
+
     const completedTasks = await taskModel.countDocuments({
       status: "Completed",
-      assignedTo: userId,
+      assignedTo: new mongoose.Types.ObjectId(userId),
     });
+
     const overdueTasks = await taskModel.countDocuments({
-      assignedTo: userId,
+      assignedTo: new mongoose.Types.ObjectId(userId),
       status: { $ne: "Completed" },
       dueDate: { $lt: new Date() },
     });
 
     const taskStatues = ["Pending", "In Progress", "Completed"];
     const taskDistributionRaw = await taskModel.aggregate([
-      { $match: { assignedTo: userId } },
+      { $match: { assignedTo: new mongoose.Types.ObjectId(userId) } },
       {
         $group: {
           _id: "$status",
@@ -117,7 +120,7 @@ export const getUserDashboardData = async (req: Request, res: Response) => {
 
     const taskPriority = ["Low", "Medium", "High"];
     const taskPriorityLevelRaw = await taskModel.aggregate([
-      { $match: { assignedTo: userId } },
+      { $match: { assignedTo: new mongoose.Types.ObjectId(userId) } },
       {
         $group: {
           _id: "$priority",
@@ -133,7 +136,7 @@ export const getUserDashboardData = async (req: Request, res: Response) => {
     }, {});
     taskPriorityLevel["all"] = totalTasks;
     const recentTasks = await taskModel
-      .find({ assignedTo: userId })
+      .find({ assignedTo: new mongoose.Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .limit(10)
       .select("title status priority dueDate createdAt");
@@ -347,6 +350,7 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
 };
 export const updateTaskChecklist = async (req: Request, res: Response) => {
   try {
+    console.log(req.params.id);
     const id = req.params.id;
     if (!id) return res.status(404).json({ message: "task id is required!" });
 
@@ -365,6 +369,7 @@ export const updateTaskChecklist = async (req: Request, res: Response) => {
     if (!todos) {
       return res.status(400).json({ message: "feild are required" });
     }
+
     let checkConfirmity = Array.isArray(todos) && todos.length;
     todos.forEach((todo: TodoType) => {
       if (!isTodo(todo)) {
@@ -377,13 +382,20 @@ export const updateTaskChecklist = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "please provide a correct data!!" });
     }
-
+    const completedTasks = todos.filter((t: any) => t.completed).length || 0;
+    const status =
+      completedTasks === 0
+        ? "Pending"
+        : completedTasks === task?.todoChecklist.length
+        ? "Completed"
+        : "In Progress";
     task.todoChecklist = todos;
+    task.status = status;
     task.progress = todos.reduce((acc: number, cur: TodoType) => {
       if (cur.completed) acc += 100 / todos.length;
       return acc;
     }, 0);
-    if (task.progress === 100) task.status = "Completed";
+
     await task.save();
 
     return res.status(200).json(task);

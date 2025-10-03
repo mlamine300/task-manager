@@ -16,9 +16,26 @@ const MenuItem = ({
   choosed: boolean;
 }) => {
   const Icon = item.icon;
+  // if (item.path === "/logout") {
+  //   const LogOut=()=>{
+
+  //   }
+  //   return (
+  //     <Link  onClick={()=>LogOut()} className="flex flex-row p-2 items-center gap-4 text-lg my-1 cursor-pointer text-text-primary/90">
+  //       <Icon className={""} />
+  //       <p className="text-sm">{item.label} </p>
+  //     </Link>
+  //   );
+  // }
   return (
     <Link
-      to={item.path}
+      onClick={() => {
+        if (item.path === "/logout") {
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+        }
+      }}
+      to={item.path === "/logout" ? "/login" : item.path}
       className={`flex flex-row p-2 items-center gap-4 text-lg my-1 cursor-pointer ${
         choosed
           ? "text-primary bg-primary/10 border-r-2 border-primary "

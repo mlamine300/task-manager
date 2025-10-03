@@ -17,7 +17,7 @@ const Login = () => {
   const [error, setError] = useState<any>({});
   const [pending, setpending] = useState(false);
   const { updateUser, user } = useUserContext();
-  console.log(user);
+
   const navigate = useNavigate();
   const handleLogin = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -44,22 +44,24 @@ const Login = () => {
       });
       if (response.status === 200) {
         console.log(response.data);
-        const token = response.data;
+        const token = response.data.token;
         localStorage.setItem("token", token);
-        console.log(user);
+        localStorage.setItem("role", response.data.role);
+
         updateUser(response.data);
-        console.log(user);
+
         if (user?.role === "admin") {
-          navigate("/admin/dashboard");
+          navigate("/");
         } else {
-          navigate("/user/dashboard");
+          navigate("/");
         }
       }
     } catch (error: any) {
       let errResponse = "error on the server";
       if (error instanceof AxiosError) {
-        if (error.response?.data?.message)
+        if (error.response?.data?.message) {
           errResponse = error.response?.data.message;
+        }
       }
       setError((err: any) => {
         return { ...err, login: errResponse };

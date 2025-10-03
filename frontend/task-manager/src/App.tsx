@@ -1,17 +1,18 @@
 import { Route, Routes } from "react-router-dom";
-import "./App.css";
+
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
 import PrivateRoute from "./routes/PrivateRoute";
-import Dashboard from "./pages/Admin/Dashboard";
-import UserDashBoard from "./pages/User/Dashboard";
+import Dashboard from "./pages/Dashboard";
+// import UserDashBoard from "./pages/User/Dashboard";
 import CreateTask from "./pages/Admin/CreateTask";
-import ManageTasks from "./pages/Admin/ManageTasks";
+import ManageTasks from "./pages/ManageTasks";
 import ManageUsers from "./pages/Admin/ManageUsers";
-import Mytasks from "./pages/User/Mytasks";
+// import Mytasks from "./pages/User/Mytasks";
 import ViewTaskDetails from "./pages/User/ViewTaskDetails";
 import { useTheme } from "next-themes";
 import { Toaster } from "react-hot-toast";
+import NotFound from "./components/NotFound";
 
 const App = () => {
   const { setTheme } = useTheme();
@@ -23,17 +24,20 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
 
         <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-          <Route path="/admin/*" element={<Dashboard />} />
-          <Route path="/admin/create-task" element={<CreateTask />} />
-          <Route path="/admin/create-task/:taskId" element={<CreateTask />} />
-          <Route path="/admin/tasks" element={<ManageTasks />} />
-          <Route path="/admin/users" element={<ManageUsers />} />
+          {/* <Route path="/admin/*" element={<Dashboard />} /> */}
+          <Route path="/create-task" element={<CreateTask />} />
+          <Route path="/create-task/:taskId" element={<CreateTask />} />
+          {/* <Route path="/admin/tasks" element={<ManageTasks />} /> */}
+          <Route path="/users" element={<ManageUsers />} />
         </Route>
-        <Route element={<PrivateRoute allowedRoles={["user"]} />}>
-          <Route path="/user/*" element={<UserDashBoard />} />
-          <Route path="/user/tasks" element={<Mytasks />} />
-          <Route path="/user/task-details/:id" element={<ViewTaskDetails />} />
+        <Route element={<PrivateRoute allowedRoles={["member", "admin"]} />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/tasks" element={<ManageTasks />} />
         </Route>
+        <Route element={<PrivateRoute allowedRoles={["member"]} />}>
+          <Route path="/tasks/:id" element={<ViewTaskDetails />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster position="top-center" reverseOrder={false} />
     </div>

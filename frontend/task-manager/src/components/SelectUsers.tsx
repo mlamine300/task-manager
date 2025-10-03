@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import type { User } from "../types";
 import { API_PATH } from "../utils/apiPaths";
 import axiosInstance from "../utils/axiosInstance";
-import { getRandomColor } from "../utils/helper";
+import { getColorFromName } from "../utils/helper";
 import Button from "./ui/Button";
 
 const SelectUsers = ({
@@ -46,7 +46,7 @@ const SelectUsers = ({
             ) : (
               <div
                 className="min-w-15 w-15 h-15 text-3xl rounded-full flex items-center justify-center text-gray-600"
-                style={{ backgroundColor: getRandomColor() }}
+                style={{ backgroundColor: getColorFromName(user.name) }}
               >
                 {user.name.charAt(0).toUpperCase()}
               </div>

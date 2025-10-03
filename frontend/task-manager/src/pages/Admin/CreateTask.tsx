@@ -50,7 +50,7 @@ const TaskForm = () => {
           setTodoList(data.todoChecklist ?? []);
           setAttachements(data.attachments ?? []);
         } else {
-          navigate("/admin/create-task");
+          navigate("/create-task");
         }
       } catch (err) {
         console.error("Error fetching task:", err);
@@ -103,7 +103,7 @@ const TaskForm = () => {
         if (status === 200) {
           toast.success("task updated successfully");
           resetForm();
-          navigate("/admin/create-task");
+          navigate("/create-task");
         } else if (data?.errors) {
           setError(data.errors);
         }
@@ -143,7 +143,7 @@ const TaskForm = () => {
         toast.success("task deleted succesufuly");
         setShowDelete(false);
         resetForm();
-        navigate("/admin/create-task");
+        navigate("/create-task");
         return;
       } else toast.error("error on deleting task");
     } catch (error) {

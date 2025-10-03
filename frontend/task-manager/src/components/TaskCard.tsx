@@ -7,6 +7,7 @@ import UsersAssignedTo from "./UsersAssignedTo";
 import { Link } from "react-router";
 
 const TaskCard = ({ className, task }: { className?: string; task: Task }) => {
+  const isItAdmin = localStorage.getItem("role") === "admin";
   const statusStyle = {
     Pending: "bg-indigo-200 text-indigo-800 border-indigo-400 border",
     "In Progress": "bg-amber-200 text-amber-800 border-amber-400 border",
@@ -42,7 +43,7 @@ const TaskCard = ({ className, task }: { className?: string; task: Task }) => {
       </div>
       <div className="px-4  mt-2   border-l-2 border-primary">
         <Link
-          to={`/admin/create-task/${task._id}`}
+          to={isItAdmin ? `/create-task/${task._id}` : `/tasks/${task._id}`}
           className="text-sm font-semibold"
         >
           {task.title}{" "}

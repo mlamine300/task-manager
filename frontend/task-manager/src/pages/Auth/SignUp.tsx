@@ -67,16 +67,25 @@ const SignUp = () => {
       if (response.status === 200) {
         const { role, token } = response.data;
         localStorage.setItem("token", token);
+        localStorage.setItem("role", role);
         if (updateUser) updateUser(response.data);
         //
         if (role === "admin") {
-          navigate("/admin/");
+          navigate("/");
         } else {
-          navigate("/user/");
+          navigate("/");
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      seterror((err: any) => {
+        return {
+          ...err,
+          main: error?.response?.data?.message || "server error",
+        };
+      });
       console.error(error);
+      setpending(false);
+      return;
     }
     setpending(false);
     seterror({});
@@ -132,7 +141,7 @@ const SignUp = () => {
             value={adminToken}
             error={error?.adminToken ?? ""}
           />
-
+          {error?.main && <p className="text-red-600 text-sm"> {error.main}</p>}
           <Button
             disabled={pending}
             text="SIGN UP"
