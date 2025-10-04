@@ -10,13 +10,11 @@ import ManageTasks from "./pages/ManageTasks";
 import ManageUsers from "./pages/Admin/ManageUsers";
 // import Mytasks from "./pages/User/Mytasks";
 import ViewTaskDetails from "./pages/User/ViewTaskDetails";
-import { useTheme } from "next-themes";
+
 import { Toaster } from "react-hot-toast";
 import NotFound from "./components/NotFound";
 
 const App = () => {
-  const { setTheme } = useTheme();
-  setTheme("light");
   return (
     <div className="layout bg-background-screen">
       <Routes>

@@ -12,7 +12,7 @@ const Card = ({
   return (
     <div
       className={twMerge(
-        "bg-white rounded-xl shadow-sm shadow-gray-cold p-4",
+        "bg-background-base rounded-xl shadow-sm shadow-gray-cold p-4",
         className
       )}
     >

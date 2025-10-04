@@ -7,6 +7,7 @@
   --font-display: "Poppins", sans-serif;
 
   /* Light theme */
+  --color-background-base: var(--background-base);
   --color-background-screen: var(--background-screen);
   --color-background: var(--background);
   --color-primary: var(--primary);
@@ -24,6 +25,7 @@
 
 :root {
   /* Light theme */
+  --background-base: #ffffff;
   --background-screen: #f8f8fa;
   --background: #f0faff;
   --primary: #64b5f6;
@@ -40,6 +42,7 @@
 }
 
 [data-theme="dark"] {
+  --background-base: #02050a;
   --background-screen: #12151a;
   --background: #19212a;
   --primary: #487da7;

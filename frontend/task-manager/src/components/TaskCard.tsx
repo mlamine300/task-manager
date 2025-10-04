@@ -21,7 +21,7 @@ const TaskCard = ({ className, task }: { className?: string; task: Task }) => {
   return (
     <div
       className={twMerge(
-        "bg-white rounded-xl shadow-sm shadow-gray-cold py-4 max-w-96 max-sm:min-w-96",
+        "bg-background-base rounded-xl shadow-sm shadow-gray-cold py-4 max-w-96 max-sm:min-w-96",
         className
       )}
     >

@@ -22,13 +22,13 @@ const SideBar = () => {
     <>
       {/* <button onClick={setShowed((s) => !s)}> */}
       <HiBars3
-        className="fixed z-20 left-2 top-5 rounded-full bg-white text-primary md:hidden w-5 h-5 active:rotate-30 transition"
+        className="fixed z-20 left-2 top-5 rounded-full bg-background-base text-primary md:hidden w-5 h-5 active:rotate-30 transition"
         onClick={() => setShowed((b) => !b)}
       />
       {/* </button> */}
       <aside
         onClick={() => setShowed(false)}
-        className={`min-h-lvh  bg-white transition duration-300 ease-in-out  ${
+        className={`min-h-lvh  bg-background-base transition duration-300 ease-in-out  ${
           showed
             ? "fixed h-full  flex flex-col w-full z-10"
             : "relative  mt-10 hidden md:flex flex-col w-64 border-r-[1px] gap-10 border-gray-200 "
@@ -45,7 +45,7 @@ const SideBar = () => {
               style={{
                 backgroundColor: getColorFromName(user?.name || "user"),
               }}
-              className="rounded-full text-white w-20 h-20 items-center justify-center flex text-7xl"
+              className="rounded-full text-background-base w-20 h-20 items-center justify-center flex text-7xl"
             >
               {user?.name.slice(0, 1).toUpperCase()}
             </p>

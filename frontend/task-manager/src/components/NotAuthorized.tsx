@@ -12,7 +12,7 @@ const NotAuthorized: React.FC = () => {
       </p>
       <a
         href="/"
-        className="mt-6 inline-block rounded-2xl bg-red-600 px-6 py-3 text-white font-medium shadow hover:bg-red-700 transition"
+        className="mt-6 inline-block rounded-2xl bg-red-600 px-6 py-3 text-background-base font-medium shadow hover:bg-red-700 transition"
       >
         Go Home
       </a>
