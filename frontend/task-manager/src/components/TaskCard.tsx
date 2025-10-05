@@ -48,12 +48,12 @@ const TaskCard = ({ className, task }: { className?: string; task: Task }) => {
         >
           {task.title}{" "}
         </Link>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-cold">
           {task.description.length > 100
             ? task.description.slice(0, 100) + "..."
             : task.description}{" "}
         </p>
-        <p className="text-xs text-gray-600 mt-2">
+        <p className="text-xs text-gray-too-cold mt-2">
           Task Done:{" "}
           <span className="text-text-primary font-semibold">{`${
             task.todoChecklist.filter((t) => t.completed).length
@@ -66,13 +66,13 @@ const TaskCard = ({ className, task }: { className?: string; task: Task }) => {
       </div>
       <div className="flex justify-between mx-4">
         <div className="flex flex-col gap-1">
-          <p className="text-xs text-gray-600/80 mt-2 ">Start Date</p>
+          <p className="text-xs text-gray-too-cold/80 mt-2 ">Start Date</p>
           <p className="text-xs font-semibold">
             {moment(new Date()).format("Do MMM yyyy")}{" "}
           </p>
         </div>
         <div className="flex flex-col gap-1">
-          <p className="text-xs text-gray-600/80 mt-2 ">Due Date</p>
+          <p className="text-xs text-gray-too-cold/80 mt-2 ">Due Date</p>
           <p className="text-xs font-semibold">
             {moment(new Date()).format("Do MMM yyyy")}{" "}
           </p>

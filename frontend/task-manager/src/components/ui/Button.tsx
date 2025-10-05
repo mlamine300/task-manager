@@ -19,7 +19,7 @@ const Button = ({
     "border-primary text-primary font-semibold border-2 hover:text-primary/50 hover:border-primary/50 disabled:border-gray-cold/70 disabled:text-gray-cold/70";
 
   const shadow =
-    "bg-gray-200/50 border border-gray-400/20 text-gray-700 font-semibold hover:bg-gray-200/30 disabled:text-gray-cold/70";
+    "bg-gray-hot/50 border border-gray-cold/20 text-gray-700 font-semibold hover:bg-gray-hot/30 disabled:text-gray-cold/70";
   const variantObject = { primary, outline, shadow };
   return (
     <button

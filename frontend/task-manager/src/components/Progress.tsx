@@ -9,7 +9,7 @@ const Progress = ({
   status: "Pending" | "In Progress" | "Completed";
 }) => {
   return (
-    <div className="w-full h-2 bg-gray-400/50 rounded-full">
+    <div className="w-full h-2 bg-gray-cold/50 rounded-full">
       <div
         className={`h-2 rounded-full bg-primary `}
         style={{

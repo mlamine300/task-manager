@@ -37,10 +37,10 @@ const Modal = ({
       >
         <HiOutlineXMark
           onClick={close}
-          className="absolute top-6 text-gray-400  right-4 text-2xl font-normal cursor-pointer hover:text-red-600"
+          className="absolute top-6 text-gray-cold  right-4 text-2xl font-normal cursor-pointer hover:text-red-600"
         />
         {title && (
-          <div className="mb-4 border-b pb-2 border-gray-400/50">
+          <div className="mb-4 border-b pb-2 border-gray-cold/50">
             <h3 className="text-lg font-semibold ">{title}</h3>
           </div>
         )}

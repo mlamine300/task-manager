@@ -39,7 +39,7 @@ const Input = ({
 
       <div
         className={twMerge(
-          "flex flex-row justify-between items-center rounded bg-gray-hot/50 p-2 px-4 border border-gray-hot  has-focus:outline outline-primary peer",
+          "flex flex-row justify-between items-center rounded  bg-gray-hot/50 p-2 px-4 border border-gray-hot  has-focus:outline outline-primary peer",
           containerClassName
         )}
       >
@@ -51,7 +51,7 @@ const Input = ({
             onChange={onChange}
             placeholder={placeHolder}
             className={twMerge(
-              "w-full bg-transparent outline-none border-none  placeholder:text-gray-400 text-sm  text-gray-700",
+              "w-full bg-transparent outline-none border-none ",
               inputClassName
             )}
           />

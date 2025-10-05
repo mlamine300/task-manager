@@ -7,7 +7,7 @@ const NotAuthorized: React.FC = () => {
       <h2 className="mt-4 text-2xl font-semibold text-gray-800">
         Not Authorized
       </h2>
-      <p className="mt-2 text-gray-600">
+      <p className="mt-2 text-gray-too-cold">
         You do not have permission to view this page.
       </p>
       <a

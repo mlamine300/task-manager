@@ -77,7 +77,7 @@ const ManageTasks = () => {
                     className={`w-5 h-5 flex items-center rounded-full justify-center text-xs ${
                       activeFilter === s
                         ? "bg-primary  text-text-accent"
-                        : "bg-gray-400/50"
+                        : "bg-gray-cold/50"
                     } `}
                   >
                     {tasksCount[s]}

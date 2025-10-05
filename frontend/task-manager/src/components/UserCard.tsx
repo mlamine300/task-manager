@@ -24,19 +24,19 @@ const UserCard = ({ user }: { user: User }) => {
         )}
         <div className="flex flex-col gap-1 w-fit max-w-56 ">
           <p className="text-sm font-semibold">{user.name} </p>
-          <p className="text-gray-400 truncate   text-xs ">{user.email}</p>
+          <p className="text-gray-cold truncate   text-xs ">{user.email}</p>
         </div>
       </div>
       <div className="flex gap-2 items-center justify-between">
-        <div className="flex flex-col rounded py-1 bg-gray-400/20 text-purple-500 w-[30%] px-4">
+        <div className="flex flex-col rounded py-1 bg-gray-cold/20 text-purple-500 w-[30%] px-4">
           <p className="text-xs">{user.pendingTask}</p>
           <p className="text-[10px]">Pending</p>
         </div>
-        <div className="flex flex-col rounded py-1 bg-gray-400/20 text-teal-400 w-[30%] px-4">
+        <div className="flex flex-col rounded py-1 bg-gray-cold/20 text-teal-400 w-[30%] px-4">
           <p className="text-xs">{user.inProgressTask}</p>
           <p className="text-[9px]">In Progress</p>
         </div>
-        <div className="flex px-4 flex-col rounded py-1 bg-gray-400/20 text-indigo-400 w-[30%] ">
+        <div className="flex px-4 flex-col rounded py-1 bg-gray-cold/20 text-indigo-400 w-[30%] ">
           <p className="text-xs">{user.completedTask}</p>
           <p className="text-[10px]">Completed</p>
         </div>

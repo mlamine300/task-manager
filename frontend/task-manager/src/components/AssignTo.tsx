@@ -25,9 +25,9 @@ const AssignTo = ({
           onClick={() => {
             setShowModal(true);
           }}
-          className=" w-fit  text-nowrap text-sm max-md:w-44 h-10 flex gap-2 items-center rounded bg-gray-400/20 px-2 py-1 font-semibold cursor-pointer border border-gray-200 hover:bg-gray-400/10 active:scale-95 transition"
+          className=" w-fit  text-nowrap text-sm max-md:w-44 h-10 flex gap-2 items-center rounded bg-gray-cold/20 px-2 py-1 font-semibold cursor-pointer border border-gray-hot hover:bg-gray-cold/10 active:scale-95 transition"
         >
-          <FaUsers className="text-2xl text-gray-400 hover:text-gray-600 mr-4" />
+          <FaUsers className="text-2xl text-gray-cold hover:text-gray-too-cold mr-4" />
           Add Members
         </button>
         {selectedUsers.length > 0 && (
@@ -41,7 +41,7 @@ const AssignTo = ({
                   />
                 ) : (
                   <div
-                    className="w-10 h-10 text-3xl rounded-full flex items-center justify-center text-gray-600"
+                    className="w-10 h-10 text-3xl rounded-full flex items-center justify-center text-gray-too-cold"
                     style={{ backgroundColor: getColorFromName(user.name) }}
                   >
                     {user.name.charAt(0).toUpperCase()}

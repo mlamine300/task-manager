@@ -20,7 +20,7 @@ const TaskTable = ({ tasks }: { tasks: TaskLine[] }) => {
   return (
     <table className="mt-5">
       <thead>
-        <tr className="border-b  text-xs lg:text-sm grid md:grid-cols-6 grid-cols-3 border-gray-200/50 py-2">
+        <tr className="border-b  text-xs lg:text-sm grid md:grid-cols-6 grid-cols-3 border-gray-hot/50 py-2">
           <th className="text-left font-semibold md:col-span-3">Name</th>
           <th className="text-left font-semibold">Status</th>
           <th className="text-left font-semibold  hidden md:flex">Priority</th>
@@ -34,7 +34,7 @@ const TaskTable = ({ tasks }: { tasks: TaskLine[] }) => {
             <tr>
               <Link
                 to={`/admin/tasks/${task._id}`}
-                className="text-xs lg:text-sm grid md:grid-cols-6 grid-cols-3 w-full py-2 items-center hover:bg-gray-200/20 hover:border-b border-gray-200/50"
+                className="text-xs lg:text-sm grid md:grid-cols-6 grid-cols-3 w-full py-2 items-center hover:bg-gray-hot/20 hover:border-b border-gray-hot/50"
               >
                 <td className="text-left md:col-span-3  ">{task.title}</td>
                 <td className="text-left md:col-span-1">

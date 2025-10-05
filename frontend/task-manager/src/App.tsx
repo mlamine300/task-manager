@@ -28,7 +28,9 @@ const App = () => {
           {/* <Route path="/admin/tasks" element={<ManageTasks />} /> */}
           <Route path="/users" element={<ManageUsers />} />
         </Route>
+
         <Route element={<PrivateRoute allowedRoles={["member", "admin"]} />}>
+          {/* <Route path="/" element={<Dashboard />} /> */}
           <Route path="/" element={<Dashboard />} />
           <Route path="/tasks" element={<ManageTasks />} />
         </Route>

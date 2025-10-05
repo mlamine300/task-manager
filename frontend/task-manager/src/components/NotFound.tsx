@@ -7,7 +7,7 @@ const NotFound: React.FC = () => {
       <h2 className="mt-4 text-2xl font-semibold text-gray-800">
         Page Not Found
       </h2>
-      <p className="mt-2 text-gray-600">
+      <p className="mt-2 text-gray-too-cold">
         Sorry, the page you are looking for doesn’t exist or has been moved.
       </p>
       <a

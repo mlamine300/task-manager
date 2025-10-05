@@ -53,7 +53,7 @@ const Dashboard = () => {
               {user?.name}
             </span>
           </p>
-          <p className=" text-sm text-gray-600">
+          <p className=" text-sm text-gray-too-cold">
             {moment().format("dddd,  Do MMM  YYYY")}
           </p>
           <div className="mt-2  grid  grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -93,7 +93,7 @@ const Dashboard = () => {
             <p className="font-semibold text-lg">Recent Tasks</p>
             <Link
               to={"/admin/tasks"}
-              className="flex gap-2 items-center text-xs rounded bg-gray-400/20 px-2 py-1 font-semibold border border-gray-200 hover:bg-gray-400/10"
+              className="flex gap-2 items-center text-xs rounded bg-gray-cold/20 px-2 py-1 font-semibold border border-gray-hot hover:bg-gray-cold/10"
             >
               See All
               <FaArrowRight />

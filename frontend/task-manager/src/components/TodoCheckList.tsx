@@ -18,9 +18,9 @@ const TodoCheckList = ({
         {todoList.map((todo, index) => (
           <div
             key={index}
-            className="font-medium flex items-center gap-2 px-4 py-1 border bg-gray-200/50 border-gray-200/20 rounded"
+            className="font-medium flex items-center gap-2 px-4 py-1 border bg-gray-hot/50 border-gray-hot/20 rounded"
           >
-            <p className="text-sm text-gray-400 font-semibold">
+            <p className="text-sm text-gray-cold font-semibold">
               {index < 10 ? `0${index + 1}` : index + 1}
             </p>
             {todo.text}{" "}
@@ -39,7 +39,7 @@ const TodoCheckList = ({
           onChange={(e) => setInputValue(e.target.value)}
           type="text"
           placeholder="Enter Task"
-          className="border border-gray-200/50 rounded p-2 px-4 bg-slate-50/50 focus:border-primary outline-0 w-full"
+          className="border border-gray-hot/50 rounded p-2 px-4 bg-slate-50/50 focus:border-primary outline-0 w-full"
         />
         <button
           disabled={!inputValue.trim()}
@@ -48,9 +48,9 @@ const TodoCheckList = ({
             setTodoList([...todoList, { text: inputValue, completed: false }]);
             setInputValue("");
           }}
-          className="flex gap-4 items-center rounded bg-gray-400/20 py-1 cursor-pointer border border-gray-200 hover:bg-gray-400/10 active:scale-95 transition  disabled:cursor-not-allowed px-4"
+          className="flex gap-4 items-center rounded bg-gray-cold/20 py-1 cursor-pointer border border-gray-hot hover:bg-gray-cold/10 active:scale-95 transition  disabled:cursor-not-allowed px-4"
         >
-          <HiOutlinePlus className="text-2xl text-gray-400 hover:text-gray-600" />
+          <HiOutlinePlus className="text-2xl text-gray-cold hover:text-gray-too-cold" />
           Add
         </button>
       </form>

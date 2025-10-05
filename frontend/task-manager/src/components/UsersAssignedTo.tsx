@@ -25,7 +25,7 @@ const UsersAssignedTo = ({
         ) : (
           <div
             className={twMerge(
-              "w-10 h-10 text-3xl rounded-full flex items-center justify-center text-gray-600",
+              "w-10 h-10 text-3xl rounded-full flex items-center justify-center text-gray-too-cold",
               imgClassName
             )}
             style={{ backgroundColor: getColorFromName(user.name) }}

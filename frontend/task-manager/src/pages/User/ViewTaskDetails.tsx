@@ -170,9 +170,9 @@ const ViewTaskDetails = () => {
                   <Link
                     to={att}
                     target="_blank"
-                    className="w-full h-8 bg-gray-400/10 rounded items-center px-2 gap-2 flex"
+                    className="w-full h-8 bg-gray-cold/10 rounded items-center px-2 gap-2 flex"
                   >
-                    <p className="text-xs text-gray-400 font-semibold">
+                    <p className="text-xs text-gray-cold font-semibold">
                       {index < 10 ? `0${index + 1}` : `${index + 1}`}
                     </p>
                     <p className="text-[11px] font-semibold truncate w-full grow">

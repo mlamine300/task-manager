@@ -187,7 +187,7 @@ const TaskForm = () => {
           disabled={pending}
           inputClassName="h-20"
           parentClassName="gap-0"
-          containerClassName="bg-slate-50/50"
+          containerClassName="bg-slate-50/50 "
           label="Task description"
           placeHolder="Enter task description"
           key="task-description"
@@ -242,7 +242,7 @@ const TaskForm = () => {
           <div className="mb-8 mt-auto flex justify-between p-10">
             <button
               onClick={() => setShowDelete(false)}
-              className="rounded px-2 py-1 border border-gray-500 bg-gray-400/20"
+              className="rounded px-2 py-1 border border-gray-500 bg-gray-cold/20"
             >
               CANCEL
             </button>
