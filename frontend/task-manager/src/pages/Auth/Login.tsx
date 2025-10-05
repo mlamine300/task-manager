@@ -38,10 +38,16 @@ const Login = () => {
 
     setpending(true);
     try {
-      const response = await axiosInstance.post(API_PATH.AUTH.LOGIN, {
-        email,
-        password,
-      });
+      const response = await axiosInstance.post(
+        API_PATH.AUTH.LOGIN,
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       if (response.status === 200) {
         console.log(response.data);
         const token = response.data.token;

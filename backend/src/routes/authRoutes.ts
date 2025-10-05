@@ -4,6 +4,8 @@ import {
   registerUser,
   getUserProfile,
   updateUserProfile,
+  refreshToken,
+  logout,
 } from "../controllers/authController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 import { configurationStorage } from "../middlewares/uploadMiddleware.ts";
@@ -31,5 +33,7 @@ authRouter.post(
     return res.status(200).json({ imageUrl });
   }
 );
+authRouter.post("/refresh", refreshToken);
+authRouter.post("/logout", logout);
 
 export default authRouter;

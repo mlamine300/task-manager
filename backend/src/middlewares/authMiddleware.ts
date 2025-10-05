@@ -2,28 +2,45 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { type NextFunction, type Request, type Response } from "express";
 import userModel from "../models/User.js";
-import type { tokenPayload } from "../types/index.ts";
+import type { TokenPayload } from "../types/index.ts";
 
 export const protect = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "you don't have permission" });
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
+
+    if (!token) {
+      return res.status(401).json({ message: "Access token missing" });
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET as string
+    ) as TokenPayload;
+
+    const user = await userModel
+      .findById(decoded.userId)
+      .select("-password")
+      .exec();
+    if (!user) {
+      return res.status(401).json({ message: "User not found or deleted" });
+    }
+
+    (req as any).user = user;
+    console.log(req.url + new Date().toISOString());
+    next();
+  } catch (err: any) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(403).json({ message: "Access token expired" });
+    }
+    return res.status(403).json({ message: "Invalid access token" });
   }
-  const decoded = jwt.decode(token);
-  if (!decoded || typeof decoded !== "object" || !("userId" in decoded)) {
-    return res.status(401).json({ message: "you don't have permission" });
-  }
-  const { userId } = decoded as tokenPayload;
-  const user = await userModel.findById(userId).select("-password").exec();
-  if (!user)
-    return res.status(401).json({ message: "you don't have permission" });
-  else next();
-  //    const token = req.headers.Authorization.replace('Bearer ', '');
-  //     const {userId}=jwt.decode(token.)
 };
 
 export const checkAdmin = (req: Request, res: Response, next: NextFunction) => {
@@ -31,7 +48,10 @@ export const checkAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (!token) {
     return res.status(401).json({ message: "you don't have permission" });
   }
-  const { role } = jwt.decode(token) as tokenPayload;
+  const { role } = jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET as string
+  ) as TokenPayload;
 
   if (!role || role !== "admin") {
     return res.status(401).json({ message: "you don't have asmin permission" });

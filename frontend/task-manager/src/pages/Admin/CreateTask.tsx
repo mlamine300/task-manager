@@ -4,7 +4,12 @@ import Card from "../../components/Card";
 import Input from "../../components/ui/Input";
 import { useEffect, useState } from "react";
 import PriorityLevel from "../../components/PriorityLevel";
-import type { priorityLevel, Task, TodoType, User } from "../../types";
+import type {
+  priorityLevel,
+  Task,
+  TodoType,
+  User,
+} from "../../../../../types/index";
 import AssignTo from "../../components/AssignTo";
 import TodoCheckList from "../../components/TodoCheckList";
 import AddAttachments from "../../components/AddAttachments";

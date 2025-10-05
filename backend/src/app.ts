@@ -8,6 +8,7 @@ import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.ts";
 import taskRouter from "./routes/taskRoutes.ts";
 import reportRouter from "./routes/reportRoutes.ts";
+import cookieParser from "cookie-parser";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import userModel from "./models/User.ts";
@@ -18,21 +19,16 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 config();
-app.use(cors());
-// app.use(
-//   cors({
-//     origin: "*",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 

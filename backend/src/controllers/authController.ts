@@ -3,7 +3,9 @@ import type { NextFunction, Response, Request } from "express";
 import userModel from "../models/User.ts";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { tokenPayload } from "../types/index.ts";
+import { TokenPayload } from "../types/index.ts";
+import { signAccessToken, signRefreshToken } from "../utils/token.ts";
+import { User } from "../../../types/index.ts";
 export const registerUser = async (
   req: Request,
   res: Response,
@@ -28,11 +30,12 @@ export const registerUser = async (
       role,
     });
     if (user) {
-      const token = await jwt.sign(
-        { userId: user._id, role: user.role },
-        process.env.TOKEN_SECRET || "",
-        { expiresIn: "7d" }
-      );
+      const token = signAccessToken(user);
+      // await jwt.sign(
+      //   { userId: user._id, role: user.role },
+      //   process.env.ACCESS_TOKEN_SECRET || "",
+      //   { expiresIn: "7d" }
+      // );
       return res.status(200).json({
         id: user._id,
         name: user.name,
@@ -49,24 +52,35 @@ export const registerUser = async (
 };
 
 export const loginUser = async (req: Request, res: Response) => {
+  console.log("-------------------");
   const { email, password } = req.body;
 
   if (!email || !password)
     return res.status(404).json({ message: "email and password are required" });
-  const foundUser = await userModel.findOne({ email }).select("").lean().exec();
+  const foundUser = await userModel.findOne({ email }).select("").exec();
 
   if (!foundUser || !foundUser.password)
     return res.status(409).json({ message: "incorrect email or password" });
   const compare = await bcrypt.compare(password, foundUser.password);
   if (!compare)
     return res.status(409).json({ message: "incorrect email or password" });
-  const token = jwt.sign(
-    { userId: foundUser._id, role: foundUser.role },
-    process.env.TOKEN_SECRET || "",
-    { expiresIn: "7d" }
-  );
+
+  const accessToken = signAccessToken(foundUser);
+  const refreshToken = signRefreshToken(foundUser);
+
+  const hashed = bcrypt.hash(refreshToken, 10);
+  foundUser.refreshTokens.push({ token: hashed });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // only over HTTPS in prod
+    sameSite: "none", // if frontend is on a different domain; else consider 'Strict' or 'Lax'
+    path: "/api/auth/refresh",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // match REFRESH_TOKEN_EXPIRES_IN
+  });
+
   const user = {
-    token,
+    token: accessToken,
     profileImageUrl: foundUser.profileImageUrl,
     email: foundUser.email,
     name: foundUser.name,
@@ -83,7 +97,7 @@ export const getUserProfile = async (
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json("un authorized");
-    const { userId } = (await jwt.decode(token)) as tokenPayload;
+    const { userId } = (await jwt.decode(token)) as TokenPayload;
     if (!userId) {
       return res.status(409).json({ message: "user id is required!!" });
     }
@@ -159,4 +173,56 @@ export const updateUserProfile = async (
   } catch (error) {
     res.status(500).json({ message: "server error, ", error });
   }
+};
+
+export const refreshToken = async (req: Request, res: Response) => {
+  console.log(req.cookies);
+  if (!req.cookies)
+    return res.status(401).json({ messsage: "there is no refresh token" });
+  const token = req.cookies.refreshToken;
+  if (!token)
+    return res.status(401).json({ messsage: "there is no refresh token" });
+  const payload = jwt.verify(
+    token,
+    process.env.REFRESH_TOKEN_SECRET || ""
+  ) as TokenPayload;
+  const user = await userModel.findById(payload.userId);
+  if (!user) return res.status(401).json({ message: "invalid refresh token" });
+
+  const idx = user.refreshTokens.findIndex((rt) => rt.token === token);
+  if (idx === -1) {
+    user.refreshTokens.splice(0, user.refreshTokens.length);
+    await user.save();
+    return res.status(403).json({ msg: "Reuse detected" });
+  }
+  user.refreshTokens.splice(idx, 1);
+  const newRefreshToken = signRefreshToken(user);
+  const hashed = bcrypt.hash(newRefreshToken, 10);
+  user.refreshTokens.push(hashed);
+  await user.save();
+  const accessToken = signAccessToken(user);
+
+  // Set new refresh cookie (replace previous)
+  res.cookie("refreshToken", newRefreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    path: "/api/auth/refresh",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.json({ accessToken });
+};
+export const logout = async (req: Request, res: Response) => {
+  const token = req.cookies.refreshToken;
+  if (token) {
+    const hashed = await bcrypt.hash(token, 10);
+    // Remove this hashed token from all users (or current user)
+    await userModel.updateOne(
+      { "refreshTokens.token": hashed },
+      { $pull: { refreshTokens: { token: hashed } } }
+    );
+  }
+  res.clearCookie("refreshToken", { path: "/api/auth/refresh" });
+  res.sendStatus(204);
 };

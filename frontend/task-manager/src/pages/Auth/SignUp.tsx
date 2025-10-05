@@ -58,12 +58,18 @@ const SignUp = () => {
       console.log(profileImageUrl);
     }
     try {
-      const response = await axiosInstance.post(API_PATH.AUTH.REGISTER, {
-        name: fullName,
-        profileImageUrl,
-        email,
-        password,
-      });
+      const response = await axiosInstance.post(
+        API_PATH.AUTH.REGISTER,
+        {
+          name: fullName,
+          profileImageUrl,
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       if (response.status === 200) {
         const { role, token } = response.data;
         localStorage.setItem("token", token);

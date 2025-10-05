@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { tokenPayload } from "../types/index.ts";
+import { TokenPayload } from "../types/index.ts";
 import userModel from "../models/User.ts";
 import taskModel, { isTodo, TodoType } from "../models/Task.ts";
 import { json } from "stream/consumers";
@@ -29,7 +29,7 @@ export const getDashboardData = async (req: Request, res: Response) => {
     const taskDistribution = taskStatues.reduce((acc: any, curr: string) => {
       const key = curr.replace(/\s+/g, "");
       const founItem = taskDistributionRaw.find((item) => item._id === curr);
-      console.log(founItem + " - " + founItem?.count);
+      ////console.log(founItem + " - " + founItem?.count);
       acc[key] = founItem?.count ?? 0;
       return acc;
     }, {});
@@ -78,7 +78,7 @@ export const getUserDashboardData = async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json({ message: "not autorized" });
-    const { userId } = (await jwt.decode(token)) as tokenPayload;
+    const { userId } = (await jwt.decode(token)) as TokenPayload;
     if (!userId) return res.status(409).json({ message: "not autorized" });
 
     const totalTasks = await taskModel.countDocuments({ assignedTo: userId });
@@ -163,7 +163,7 @@ export const getAllTasks = async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json({ message: "not authorized" });
-    const { role, userId } = jwt.decode(token) as tokenPayload;
+    const { role, userId } = jwt.decode(token) as TokenPayload;
     if (!role) return res.status(409).json({ message: "not authorized" });
     if (role === "admin") {
       const tasks = await taskModel
@@ -222,7 +222,7 @@ export const createTask = async (req: Request, res: Response) => {
     }
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json({ message: "not authorized" });
-    const { userId } = (await jwt.decode(token)) as tokenPayload;
+    const { userId } = (await jwt.decode(token)) as TokenPayload;
     const task = await taskModel.create({
       title,
       description,
@@ -251,7 +251,7 @@ export const updateTask = async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json({ message: "not athorized!!" });
 
-    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+    const { userId, role } = (await jwt.decode(token)) as TokenPayload;
 
     if (!userId) return res.status(409).json({ message: "not athorized!!" });
     if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin") {
@@ -308,7 +308,7 @@ export const deleteTask = async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json({ message: "not athorized!!" });
 
-    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+    const { userId, role } = (await jwt.decode(token)) as TokenPayload;
 
     if (!userId) return res.status(409).json({ message: "not athorized!!" });
     if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin")
@@ -330,7 +330,7 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json({ message: "not athorized!!" });
 
-    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+    const { userId, role } = (await jwt.decode(token)) as TokenPayload;
 
     if (!userId) return res.status(409).json({ message: "not athorized!!" });
     if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin")
@@ -350,7 +350,7 @@ export const updateTaskStatus = async (req: Request, res: Response) => {
 };
 export const updateTaskChecklist = async (req: Request, res: Response) => {
   try {
-    console.log(req.params.id);
+    //console.log(req.params.id);
     const id = req.params.id;
     if (!id) return res.status(404).json({ message: "task id is required!" });
 
@@ -359,7 +359,7 @@ export const updateTaskChecklist = async (req: Request, res: Response) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(409).json({ message: "not athorized!!" });
 
-    const { userId, role } = (await jwt.decode(token)) as tokenPayload;
+    const { userId, role } = (await jwt.decode(token)) as TokenPayload;
 
     if (!userId) return res.status(409).json({ message: "not athorized!!" });
     if (!task?.assignedTo.find((t) => t.equals(userId)) && role !== "admin")
