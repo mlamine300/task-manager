@@ -10,6 +10,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATH } from "../../utils/apiPaths";
 import { useUserContext } from "../../context/user/userContext";
 import { AxiosError } from "axios";
+import { tokenService } from "../../utils/tokenService";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("lmoh@gmail.com");
@@ -38,20 +39,15 @@ const Login = () => {
 
     setpending(true);
     try {
-      const response = await axiosInstance.post(
-        API_PATH.AUTH.LOGIN,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axiosInstance.post(API_PATH.AUTH.LOGIN, {
+        email,
+        password,
+      });
       if (response.status === 200) {
         console.log(response.data);
         const token = response.data.token;
-        localStorage.setItem("token", token);
+        // localStorage.setItem("token", token);
+        tokenService.setToken(token);
         localStorage.setItem("role", response.data.role);
 
         updateUser(response.data);
@@ -63,6 +59,7 @@ const Login = () => {
         }
       }
     } catch (error: any) {
+      console.log(error);
       let errResponse = "error on the server";
       if (error instanceof AxiosError) {
         if (error.response?.data?.message) {

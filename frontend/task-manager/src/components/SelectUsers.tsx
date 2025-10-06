@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
-import type { User } from "../types";
+import type { User } from "../../../../types/index";
 import { API_PATH } from "../utils/apiPaths";
 import axiosInstance from "../utils/axiosInstance";
 import { getColorFromName } from "../utils/helper";

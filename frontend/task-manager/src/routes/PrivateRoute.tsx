@@ -3,10 +3,12 @@ import Fouter from "../components/Fouter";
 import Header from "../components/Header";
 import NotAuthorized from "../components/NotAuthorized";
 import { useEffect } from "react";
+import { tokenService } from "../utils/tokenService";
 
 const PrivateRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
   const role = localStorage.getItem("role");
-  const token = localStorage.getItem("token");
+  //const token = localStorage.getItem("token");
+  const token = tokenService.getToken();
   const navigate = useNavigate();
   useEffect(() => {
     if (!token) {
@@ -14,7 +16,6 @@ const PrivateRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
     }
   }, [token, navigate]);
 
-  console.log(token);
   if (role && allowedRoles.includes(role))
     return (
       <div className="w-full h-full">

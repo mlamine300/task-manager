@@ -1,5 +1,5 @@
 import moment from "moment";
-import type { TaskLine } from "../types";
+import type { TaskLine } from "../../../../types/index";
 import { Link } from "react-router";
 
 const TaskTable = ({ tasks }: { tasks: TaskLine[] }) => {
@@ -31,7 +31,7 @@ const TaskTable = ({ tasks }: { tasks: TaskLine[] }) => {
       {tasks && Array.isArray(tasks) && tasks.length > 0 ? (
         <tbody className="w-full">
           {tasks.map((task) => (
-            <tr>
+            <tr key={task._id}>
               <Link
                 to={`/admin/tasks/${task._id}`}
                 className="text-xs lg:text-sm grid md:grid-cols-6 grid-cols-3 w-full py-2 items-center hover:bg-gray-hot/20 hover:border-b border-gray-hot/50"

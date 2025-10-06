@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import { TokenPayload } from "../types/index.ts";
 import { signAccessToken, signRefreshToken } from "../utils/token.ts";
 import { User } from "../../../types/index.ts";
+import crypto from "crypto";
+
 export const registerUser = async (
   req: Request,
   res: Response,
@@ -31,11 +33,27 @@ export const registerUser = async (
     });
     if (user) {
       const token = signAccessToken(user);
-      // await jwt.sign(
-      //   { userId: user._id, role: user.role },
-      //   process.env.ACCESS_TOKEN_SECRET || "",
-      //   { expiresIn: "7d" }
-      // );
+      const refreshToken = signRefreshToken(user);
+      const hashed = crypto
+        .createHash("sha256")
+        .update(refreshToken)
+        .digest("hex");
+      user.refreshTokens.push({ token: hashed, ip: req.ip });
+      await user.save();
+      // For cross-origin auth in development, set SameSite to 'none' and
+      // expose cookie on the whole site (path '/') so the browser can
+      // store and later send it to the refresh endpoint. In production
+      // `secure` should be true (HTTPS).
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+        path: "/",
+        maxAge:
+          Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
+          7 * 24 * 60 * 60 * 1000,
+      });
+
       return res.status(200).json({
         id: user._id,
         name: user.name,
@@ -68,15 +86,19 @@ export const loginUser = async (req: Request, res: Response) => {
   const accessToken = signAccessToken(foundUser);
   const refreshToken = signRefreshToken(foundUser);
 
-  const hashed = bcrypt.hash(refreshToken, 10);
-  foundUser.refreshTokens.push({ token: hashed });
-
+  const hashed = crypto.createHash("sha256").update(refreshToken).digest("hex");
+  foundUser.refreshTokens.push({ token: hashed, ip: req.ip });
+  await foundUser.save();
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // only over HTTPS in prod
-    sameSite: "none", // if frontend is on a different domain; else consider 'Strict' or 'Lax'
-    path: "/api/auth/refresh",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // match REFRESH_TOKEN_EXPIRES_IN
+    // For cross-origin XHR/fetch to accept Set-Cookie, SameSite must be 'none'.
+    // We keep `secure` conditional so in dev (HTTP) cookies are allowed.
+    sameSite: "none",
+    path: "/",
+    maxAge:
+      Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
+      7 * 24 * 60 * 60 * 1000,
   });
 
   const user = {
@@ -176,42 +198,50 @@ export const updateUserProfile = async (
 };
 
 export const refreshToken = async (req: Request, res: Response) => {
-  console.log(req.cookies);
-  if (!req.cookies)
-    return res.status(401).json({ messsage: "there is no refresh token" });
-  const token = req.cookies.refreshToken;
-  if (!token)
-    return res.status(401).json({ messsage: "there is no refresh token" });
-  const payload = jwt.verify(
-    token,
-    process.env.REFRESH_TOKEN_SECRET || ""
-  ) as TokenPayload;
-  const user = await userModel.findById(payload.userId);
-  if (!user) return res.status(401).json({ message: "invalid refresh token" });
+  try {
+    console.log(req.cookies);
+    if (!req.cookies)
+      return res.status(462).json({ messsage: "there is no cookies" });
+    const token = req.cookies.refreshToken;
+    if (!token)
+      return res.status(462).json({ messsage: "there is no refresh token" });
 
-  const idx = user.refreshTokens.findIndex((rt) => rt.token === token);
-  if (idx === -1) {
-    user.refreshTokens.splice(0, user.refreshTokens.length);
+    const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || "");
+    //const payload = jwt.decode(token);
+
+    const user = await userModel.findById((payload as TokenPayload).userId);
+    if (!user)
+      return res.status(401).json({ message: "invalid refresh token" });
+    const hashedtoken = crypto.createHash("sha256").update(token).digest("hex");
+    const idx = user.refreshTokens.findIndex((rt) => rt.token === hashedtoken);
+    if (idx === -1) {
+      user.refreshTokens.splice(0, user.refreshTokens.length);
+      await user.save();
+      return res.status(403).json({ msg: "Reuse detected" });
+    }
+
+    const newRefreshToken = signRefreshToken(user);
+
+    user.refreshTokens.push({ token: hashedtoken, ip: req.ip });
     await user.save();
-    return res.status(403).json({ msg: "Reuse detected" });
+    const accessToken = signAccessToken(user);
+
+    // Set new refresh cookie (replace previous)
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      path: "/",
+      maxAge:
+        Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
+        7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ accessToken });
+  } catch (error) {
+    console.log(error);
+    return res.status(462).json({ message: "invalid refresh token" });
   }
-  user.refreshTokens.splice(idx, 1);
-  const newRefreshToken = signRefreshToken(user);
-  const hashed = bcrypt.hash(newRefreshToken, 10);
-  user.refreshTokens.push(hashed);
-  await user.save();
-  const accessToken = signAccessToken(user);
-
-  // Set new refresh cookie (replace previous)
-  res.cookie("refreshToken", newRefreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
-    path: "/api/auth/refresh",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-
-  res.json({ accessToken });
 };
 export const logout = async (req: Request, res: Response) => {
   const token = req.cookies.refreshToken;
@@ -223,6 +253,13 @@ export const logout = async (req: Request, res: Response) => {
       { $pull: { refreshTokens: { token: hashed } } }
     );
   }
-  res.clearCookie("refreshToken", { path: "/api/auth/refresh" });
+  // Make sure to clear using the same path that was used to set it
+  //res.clearCookie("refreshToken", { path: "/" });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+    path: "/", // must match original cookie path
+  });
   res.sendStatus(204);
 };

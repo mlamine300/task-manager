@@ -33,11 +33,11 @@ export const protect = async (
     }
 
     (req as any).user = user;
-    console.log(req.url + new Date().toISOString());
+    //console.log(req.url + new Date().toISOString());
     next();
   } catch (err: any) {
     if (err.name === "TokenExpiredError") {
-      return res.status(403).json({ message: "Access token expired" });
+      return res.status(461).json({ message: "Access token expired" });
     }
     return res.status(403).json({ message: "Invalid access token" });
   }

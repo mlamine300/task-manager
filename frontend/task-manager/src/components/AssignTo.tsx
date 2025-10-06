@@ -5,7 +5,7 @@ import { FaUsers } from "react-icons/fa6";
 import { useState } from "react";
 import Modal from "./ui/Modal";
 import SelectUsers from "./SelectUsers";
-import type { User } from "../types";
+import type { User } from "../../../../types/index";
 import { getColorFromName } from "../utils/helper";
 
 const AssignTo = ({

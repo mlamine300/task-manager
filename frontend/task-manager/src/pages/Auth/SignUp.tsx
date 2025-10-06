@@ -14,6 +14,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATH } from "../../utils/apiPaths";
 import { useUserContext } from "../../context/user/userContext";
 import { uploadImage } from "../../utils/uploadImage";
+import { tokenService } from "../../utils/tokenService";
 
 const SignUp = () => {
   const [profileImage, setProfileImage] = useState(null);
@@ -72,7 +73,8 @@ const SignUp = () => {
       );
       if (response.status === 200) {
         const { role, token } = response.data;
-        localStorage.setItem("token", token);
+        // localStorage.setItem("token", token);
+        tokenService.setToken(token);
         localStorage.setItem("role", role);
         if (updateUser) updateUser(response.data);
         //

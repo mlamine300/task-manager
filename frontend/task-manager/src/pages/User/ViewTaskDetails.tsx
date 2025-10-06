@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Card from "../../components/Card";
 import DashboardLayout from "../../layouts/DashboardLayout";
-import type { Task } from "../../types";
+import type { Task } from "../../../../../types/index";
 import { Link, useNavigate, useParams } from "react-router";
 import axiosInstance from "../../utils/axiosInstance";
 import { API_PATH } from "../../utils/apiPaths";

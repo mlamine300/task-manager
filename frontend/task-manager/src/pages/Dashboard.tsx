@@ -12,23 +12,44 @@ import { FaArrowRight } from "react-icons/fa6";
 import TaskTable from "../components/TaskTable";
 import TaskPieChart from "../components/TaskPieChart";
 import TaskBarChart from "../components/TaskBarChart";
+import Spinner from "../components/Spinner";
 
 const Dashboard = () => {
   const role = localStorage.getItem("role") || "member";
   const [dashboardData, setDashboardData] = useState<any>(null);
   const { user } = useUserContext();
+  const [isFetching, setIsFetching] = useState(true);
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      const link =
-        role === "admin"
-          ? API_PATH.TASK.GET_DASHBOARD_DATA
-          : API_PATH.TASK.GET_USER_DASHBOARD_DATA;
-      const { data } = await axiosInstance.get(link);
-      console.log(data);
-      if (data) setDashboardData(data);
+    const fetchDashboardData = async (attemps: number) => {
+      try {
+        const link =
+          role === "admin"
+            ? API_PATH.TASK.GET_DASHBOARD_DATA
+            : API_PATH.TASK.GET_USER_DASHBOARD_DATA;
+        const response = await axiosInstance.get(link);
+        console.log(response.data);
+        if (response.data) {
+          setDashboardData(response.data);
+          setIsFetching(false);
+        }
+      } catch (error: any) {
+        if (
+          error.response.data.message === "Access token expired" &&
+          attemps < 3
+        ) {
+          setTimeout(() => {
+            console.log("waiting for refresh", attemps);
+            fetchDashboardData(attemps + 1);
+            attemps++;
+          }, 1000);
+        } else {
+          setIsFetching(false);
+          console.log("no fetching");
+        }
+      }
     };
-    fetchDashboardData();
-  }, []);
+    fetchDashboardData(0);
+  }, [role]);
 
   const pieChartData = dashboardData?.charts?.taskDistribution
     ? Object.entries(dashboardData.charts.taskDistribution)
@@ -43,6 +64,15 @@ const Dashboard = () => {
           .map(([key, value]) => ({ name: key, count: value }))
       : [];
 
+  if (isFetching) {
+    return (
+      <DashboardLayout>
+        <div className="w-full h-[70svh] flex items-center justify-center">
+          <Spinner size="xl" />
+        </div>
+      </DashboardLayout>
+    );
+  }
   return (
     <DashboardLayout>
       <div className="flex max-md:items-center bg-background/50 flex-col gap-8 w-full h-full  p-4">

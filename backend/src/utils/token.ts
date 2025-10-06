@@ -8,7 +8,7 @@ export const signAccessToken = (user: any) => {
     { userId: user._id, role: user.role },
     process.env.ACCESS_TOKEN_SECRET || "",
     {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "5m",
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN || "5s",
     } as jwt.SignOptions
   );
 };
@@ -18,7 +18,7 @@ export const signRefreshToken = (user: any) => {
     { userId: user._id },
     process.env.REFRESH_TOKEN_SECRET || "your_default_refresh_secret",
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || "1y",
     } as jwt.SignOptions
   );
 };
