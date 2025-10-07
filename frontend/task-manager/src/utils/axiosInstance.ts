@@ -44,6 +44,7 @@ axiosInstance.interceptors.response.use(
     if (err.response) {
       // if ((err.response.data as any)?.message === "Access token expired")
       if (err.status === 461) {
+        console.log("---------------------");
         refreshToken(err);
       } else if (err.status === 462) {
         window.location.href = "/login";
@@ -61,7 +62,7 @@ export default axiosInstance;
 
 const refreshToken = async (err: any) => {
   const originalReq = err.config;
-
+  console.log("refreshing");
   if (err.response && err.response.status === 461 && !originalReq._retry) {
     if (isRefreshing) {
       return new Promise(function (resolve, reject) {
@@ -73,7 +74,7 @@ const refreshToken = async (err: any) => {
     }
     originalReq._retry = true;
     isRefreshing = true;
-    console.log("refresh start....");
+    //console.log("refresh start....");
     try {
       const res = await axiosInstance.post(
         "/api/auth/refresh",
@@ -81,8 +82,14 @@ const refreshToken = async (err: any) => {
         {
           withCredentials: true,
         }
-      );
-
+      ); // withCredentials:true set in instance
+      // if (
+      //   res.status === 462 &&
+      //   ((res.data as any).message === "invalid refresh token" ||
+      //     (res.data as any).message === "there is no refresh token")
+      // ) {
+      //   window.location.href = "/login";
+      // }
       const newToken = res.data.accessToken;
       axiosInstance.defaults.headers.common["Authorization"] =
         "Bearer " + newToken;

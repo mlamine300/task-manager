@@ -70,7 +70,7 @@ export const getDashboardData = async (req: Request, res: Response) => {
       recentTasks,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "server error, ", error });
   }
 };
@@ -154,7 +154,7 @@ export const getUserDashboardData = async (req: Request, res: Response) => {
       recentTasks,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "server error, ", error });
   }
 };
@@ -180,7 +180,7 @@ export const getAllTasks = async (req: Request, res: Response) => {
     //   .exec();
     return res.json(tasks);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "server error, ", error });
   }
 };
@@ -295,7 +295,7 @@ export const updateTask = async (req: Request, res: Response) => {
       attachments,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "server error, ", error });
   }
 };
@@ -400,7 +400,7 @@ export const updateTaskChecklist = async (req: Request, res: Response) => {
 
     return res.status(200).json(task);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "server error, ", error });
   }
 };

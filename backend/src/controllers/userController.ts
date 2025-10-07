@@ -28,7 +28,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         return { ...user, pendingTask, inProgressTask, completedTask };
       })
     );
-    console.log(usersWithTask);
+    //console.log(usersWithTask);
     return res.status(200).json(usersWithTask);
   } catch (error) {
     return res.status(500).json({ message: "server error" });

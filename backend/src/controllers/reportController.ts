@@ -50,7 +50,7 @@ export const generateTaskReport = async (req: Request, res: Response) => {
     );
     return workbook.xlsx.write(res).then(() => res.end());
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "server error!!" });
   }
 };
@@ -116,7 +116,7 @@ export const generateUserReport = async (req: Request, res: Response) => {
 
     return workbook.xlsx.write(res).then(() => res.end());
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({ message: "server error!!" });
   }
 };

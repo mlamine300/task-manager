@@ -38,21 +38,24 @@ export const registerUser = async (
         .createHash("sha256")
         .update(refreshToken)
         .digest("hex");
+
       user.refreshTokens.push({ token: hashed, ip: req.ip });
       await user.save();
-      // For cross-origin auth in development, set SameSite to 'none' and
-      // expose cookie on the whole site (path '/') so the browser can
-      // store and later send it to the refresh endpoint. In production
-      // `secure` should be true (HTTPS).
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
-        path: "/",
-        maxAge:
-          Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
-          7 * 24 * 60 * 60 * 1000,
-      });
+
+      {
+        const secure = process.env.NODE_ENV === "production";
+        const cookieOpts: any = {
+          httpOnly: true,
+          secure,
+          sameSite: secure ? "none" : "lax",
+          path: "/",
+          maxAge:
+            Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
+            7 * 24 * 60 * 60 * 1000,
+        };
+        console.debug("Setting refresh cookie (register) opts:", cookieOpts);
+        res.cookie("refreshToken", refreshToken, cookieOpts);
+      }
 
       return res.status(200).json({
         id: user._id,
@@ -64,13 +67,12 @@ export const registerUser = async (
       });
     }
   } catch (error) {
-    console.log("error regestring a user", error);
+    console.error("error regestring a user", error);
   }
   return res.status(500).json({ message: "server error" });
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-  console.log("-------------------");
   const { email, password } = req.body;
 
   if (!email || !password)
@@ -87,19 +89,24 @@ export const loginUser = async (req: Request, res: Response) => {
   const refreshToken = signRefreshToken(foundUser);
 
   const hashed = crypto.createHash("sha256").update(refreshToken).digest("hex");
+  console.log("login token :", hashed);
   foundUser.refreshTokens.push({ token: hashed, ip: req.ip });
+
   await foundUser.save();
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // only over HTTPS in prod
-    // For cross-origin XHR/fetch to accept Set-Cookie, SameSite must be 'none'.
-    // We keep `secure` conditional so in dev (HTTP) cookies are allowed.
-    sameSite: "none",
-    path: "/",
-    maxAge:
-      Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
-      7 * 24 * 60 * 60 * 1000,
-  });
+  {
+    const secure = process.env.NODE_ENV === "production";
+    const cookieOpts: any = {
+      httpOnly: true,
+      secure,
+      sameSite: secure ? "none" : "lax",
+      path: "/",
+      maxAge:
+        Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
+        7 * 24 * 60 * 60 * 1000,
+    };
+    console.debug("Setting refresh cookie (login) opts:", cookieOpts);
+    res.cookie("refreshToken", refreshToken, cookieOpts);
+  }
 
   const user = {
     token: accessToken,
@@ -133,7 +140,7 @@ export const getUserProfile = async (
 
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: "server error, ", error });
   }
 };
@@ -199,7 +206,6 @@ export const updateUserProfile = async (
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
-    console.log(req.cookies);
     if (!req.cookies)
       return res.status(462).json({ messsage: "there is no cookies" });
     const token = req.cookies.refreshToken;
@@ -213,53 +219,68 @@ export const refreshToken = async (req: Request, res: Response) => {
     if (!user)
       return res.status(401).json({ message: "invalid refresh token" });
     const hashedtoken = crypto.createHash("sha256").update(token).digest("hex");
+
+    user.refreshTokens.forEach((r) =>
+      console.log(r.token, " | ", hashedtoken, " = ", r.token === hashedtoken)
+    );
     const idx = user.refreshTokens.findIndex((rt) => rt.token === hashedtoken);
     if (idx === -1) {
       user.refreshTokens.splice(0, user.refreshTokens.length);
       await user.save();
       return res.status(403).json({ msg: "Reuse detected" });
     }
-
+    user.refreshTokens.splice(idx, 1);
     const newRefreshToken = signRefreshToken(user);
-
-    user.refreshTokens.push({ token: hashedtoken, ip: req.ip });
+    const newHashhedtoken = crypto
+      .createHash("sha256")
+      .update(newRefreshToken)
+      .digest("hex");
+    user.refreshTokens.push({ token: newHashhedtoken, ip: req.ip });
     await user.save();
     const accessToken = signAccessToken(user);
 
     // Set new refresh cookie (replace previous)
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      path: "/",
-      maxAge:
-        Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
-        7 * 24 * 60 * 60 * 1000,
-    });
+    {
+      const secure = process.env.NODE_ENV === "production";
+      const cookieOpts: any = {
+        httpOnly: true,
+        secure,
+        sameSite: secure ? "none" : "lax",
+        path: "/",
+        maxAge:
+          Number(process.env.REFRESH_TOKEN_EXPIRES_IN_NUMBER) ||
+          7 * 24 * 60 * 60 * 1000,
+      };
+      console.debug("Setting refresh cookie (refresh) opts:", cookieOpts);
+      res.cookie("refreshToken", newRefreshToken, cookieOpts);
+    }
 
     res.json({ accessToken });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(462).json({ message: "invalid refresh token" });
   }
 };
 export const logout = async (req: Request, res: Response) => {
   const token = req.cookies.refreshToken;
   if (token) {
-    const hashed = await bcrypt.hash(token, 10);
+    const hashed = crypto.createHash("sha256").update(token).digest("hex");
     // Remove this hashed token from all users (or current user)
     await userModel.updateOne(
       { "refreshTokens.token": hashed },
       { $pull: { refreshTokens: { token: hashed } } }
     );
   }
-  // Make sure to clear using the same path that was used to set it
-  //res.clearCookie("refreshToken", { path: "/" });
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: false,
-    sameSite: "none",
-    path: "/", // must match original cookie path
-  });
+
+  {
+    const secure = process.env.NODE_ENV === "production";
+    const clearOpts: any = {
+      httpOnly: true,
+      secure,
+      sameSite: secure ? "none" : "lax",
+      path: "/",
+    };
+    res.clearCookie("refreshToken", clearOpts);
+  }
   res.sendStatus(204);
 };
