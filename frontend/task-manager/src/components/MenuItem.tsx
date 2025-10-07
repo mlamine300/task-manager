@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Link } from "react-router";
+import axiosInstance from "../utils/axiosInstance";
+import { API_PATH } from "../utils/apiPaths";
 
 const MenuItem = ({
   item,
@@ -15,6 +17,14 @@ const MenuItem = ({
 
   choosed: boolean;
 }) => {
+  const logout = async () => {
+    try {
+      const data = await axiosInstance.post(API_PATH.AUTH.LOGOUT);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const Icon = item.icon;
   // if (item.path === "/logout") {
   //   const LogOut=()=>{
@@ -33,6 +43,7 @@ const MenuItem = ({
         if (item.path === "/logout") {
           localStorage.removeItem("token");
           localStorage.removeItem("role");
+          logout();
         }
       }}
       to={item.path === "/logout" ? "/login" : item.path}
