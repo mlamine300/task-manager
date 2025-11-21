@@ -28,31 +28,33 @@
   /* Light theme */
   --background-base: #ffffff;
   --background-screen: #f8f8fa;
-  --background: #f0faff;
-  --primary: #64b5f6;
+  --background: #f0fff4;
+
+  --primary: #4caf50; /* Green accent instead of blue */
   --text-primary: #12161d;
-  --text-accent: #f0fbff;
-  --cold: #346ca8;
-  --hot: #bae5ff;
+  --text-accent: #f0fff4;
+  --cold: #2e7d32; /* darker green for info/secondary */
+  --hot: #a8e6a1; /* light green highlight */
+
   /* Neutrals */
   --gray-cold: #6b7a8f;
   --gray-hot: #dce3eb;
   --gray-too-cold: #627189;
-  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
 }
 
 [data-theme="dark"] {
-  --background-base: #212429; /* main body background (slightly warmer dark) */
-  --background-screen: #161b22; /* panels and cards (soft contrast) */
-  --background: #010409; /* sidebar and header background */
+  --background-base: #212429;
+  --background-screen: #161b22;
+  --background: #010409;
 
-  --primary: #567df4; /* modern blue accent */
+  --primary: #43a047; /* modern green accent */
   --text-primary: #e5e9f0;
   --text-secondary: #9badc8;
-  --text-accent: #6e7c95; /* secondary text (muted gray-blue) */
+  --text-accent: #6e7c95;
 
-  --cold: #3fa9fc; /* vibrant cold accent (blue for info elements) */
-  --hot: #a011ff;
+  --cold: #66bb6a; /* vibrant green for info */
+  --hot: #b9f6ca; /* bright green highlight */
+
   --gray-cold: #dce3eb;
   --gray-hot: #6b7a8f;
   --gray-too-cold: #f1ebf2;
